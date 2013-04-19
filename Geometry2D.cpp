@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
 class Math {
@@ -149,6 +147,10 @@ public:
         this->Y = Y;
     }
 
+    bool equalsTo(const Point2DI *arg) const {
+        return this->X == arg->X && this->Y == arg->Y;
+    }
+
     void setX(long long X) {
         this->X = X;
     }
@@ -219,6 +221,11 @@ public:
         this->Y = (double)arg.getY();
     }
 
+    bool equalsTo(const Point2DD *arg) const {
+        return Math::abs(this->X - arg->X) < Math::Epsilon &&
+                Math::abs(this->Y - arg->Y) < Math::Epsilon;
+    }
+
     void setX(double X) {
         this->X = X;
     }
@@ -281,6 +288,15 @@ public:
     Point2DP() {
         this->distance = 0;
         this->angle = 0;
+    }
+
+    Point2DP(const double X, const double Y) {
+        this->distance = sqrt((double)(X * X + Y * Y));
+        if (Y >= 0) {
+            this->angle = acos(X / this->distance);
+        } else {
+            this->angle = 2 * Math::PI - acos(X / this->distance);
+        }
     }
 
     Point2DP(const Point2DD* arg) {
@@ -476,6 +492,10 @@ public:
 
     Point2DD* getProjection(const Point2DD *arg) const {
         return this->intersectWith(this->getPerpendicular(arg));
+    }
+
+    Point2DD* getSymetricOf(const Point2DD *arg) const {
+        return this->getProjection(arg)->getSymetricOf(arg);
     }
 };
 
