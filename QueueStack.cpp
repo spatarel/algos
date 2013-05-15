@@ -6,7 +6,7 @@ private:
     int start;
     int stop;
 
-    T* queueStack;
+    T* data;
 
 public:
     QueueStack(const unsigned int maxSize) {
@@ -16,12 +16,12 @@ public:
         this->start = 1;
         this->stop = 0;
 
-        this->queueStack = new T[this->maxSize];
+        this->data = new T[this->maxSize];
     }
 
     void pushBack(const T &value) {
         ++this->stop;
-        this->queueStack[this->stop % this->maxSize] = value;
+        this->data[this->stop % this->maxSize] = value;
     }
 
     void pushFront(const T &value) {
@@ -30,15 +30,23 @@ public:
             this->start += maxSize;
             this->stop += maxSize;
         }
-        this->queueStack[this->start % this->maxSize] = value;
+        this->data[this->start % this->maxSize] = value;
     }
 
-    T pop() {
-        return this->queueStack[this->start++ % this->maxSize];
+    T popBack() {
+        return this->data[this->stop-- % this->maxSize];
     }
 
-    const T peek() const {
-        return this->queueStack[this->start % this->maxSize];
+    T popFront() {
+        return this->data[this->start++ % this->maxSize];
+    }
+
+    const T peekBack() const {
+        return this->data[this->stop % this->maxSize];
+    }
+
+    const T peekFront() const {
+        return this->data[this->start % this->maxSize];
     }
 
     int getSize() const {
@@ -47,5 +55,9 @@ public:
 
     bool isEmpty() const {
         return this->getSize() == 0;
+    }
+
+    ~QueueStack() {
+        delete[] this->data;
     }
 };

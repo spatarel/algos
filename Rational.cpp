@@ -1,10 +1,12 @@
+#include <assert.h>
+
 template<class T>
 class Rational {
 private:
     T numerator;
     T denominator;
 
-    T abs(T arg) {
+    static T abs(const T& arg) {
         if (arg >= 0) {
             return arg;
         } else {
@@ -20,8 +22,8 @@ private:
         if (this->numerator == 0) {
             this->denominator = 1;
         }
-        T a = abs(this->numerator);
-        T b = abs(this->denominator);
+        T a = Rational::abs(this->numerator);
+        T b = Rational::abs(this->denominator);
         T c;
         for (;b > 0;) {
             c = a % b;
@@ -38,98 +40,102 @@ public:
         this->denominator = 1;
     }
 
-    Rational<T>(const Rational<T> &arg) {
+    Rational(const Rational& arg) {
         this->numerator = arg.numerator;
         this->denominator = arg.denominator;
     }
 
-    Rational(const T value) {
+    Rational(const T& value) {
         this->numerator = value;
         this->denominator = 1;
     }
 
-    Rational(const T numerator, const T denominator) {
-        //assert(denominator != 0);
+    Rational(const T& numerator, const T& denominator) {
+        assert(denominator != 0);
         this->numerator = numerator;
         this->denominator = denominator;
         this->simplify();
     }
 
-    Rational module() {
-        if (*this >= 0) {
+    Rational module() const {
+        if (*this >= (T)0) {
             return *this;
         } else {
             return -*this;
         }
     }
 
-    bool operator == (const Rational arg) const {
+    bool operator == (const Rational& arg) const {
         return this->numerator == arg.numerator && this->denominator == arg.denominator;
     }
 
-    bool operator != (const Rational arg) const {
+    bool operator != (const Rational& arg) const {
         return !(this->numerator == arg.numerator && this->denominator == arg.denominator);
     }
 
-    bool operator > (const Rational arg) const {
+    bool operator > (const Rational& arg) const {
         return this->numerator * arg.denominator > arg.numerator * this->denominator;
     }
 
-    bool operator >= (const Rational arg) const {
+    bool operator >= (const Rational& arg) const {
         return this->numerator * arg.denominator >= arg.numerator * this->denominator;
     }
 
-    bool operator < (const Rational arg) const {
+    bool operator < (const Rational& arg) const {
         return this->numerator * arg.denominator < arg.numerator * this->denominator;
     }
 
-    bool operator <= (const Rational arg) const {
+    bool operator <= (const Rational& arg) const {
         return this->numerator * arg.denominator <= arg.numerator * this->denominator;
     }
 
-    Rational operator + (const Rational arg) const {
+    const Rational& operator + () const {
+        return *this;
+    }
+
+    Rational operator + (const Rational& arg) const {
         return Rational(
                 this->numerator * arg.denominator + arg.numerator * this->denominator,
                 this->denominator * arg.denominator);
     }
 
-    Rational operator - (const Rational arg) const {
-        return Rational(
-                this->numerator * arg.denominator - arg.numerator * this->denominator,
-                this->denominator * arg.denominator);
-    }
-
-    Rational operator * (const Rational arg) const {
-        return Rational(
-                this->numerator * arg.numerator,
-                this->denominator * arg.denominator);
-    }
-
-    Rational operator / (const Rational arg) const {
-        return Rational(
-                this->numerator * arg.denominator,
-                this->denominator * arg.numerator);
-    }
-
-    Rational operator += (const Rational arg) {
-        return *this = *this + arg;
-    }
-
-    Rational operator - () {
+    Rational operator - () const {
         return Rational(
                 -this->numerator,
                 this->denominator);
     }
 
-    Rational operator -= (const Rational arg) {
+    Rational operator - (const Rational& arg) const {
+        return Rational(
+                this->numerator * arg.denominator - arg.numerator * this->denominator,
+                this->denominator * arg.denominator);
+    }
+
+    Rational operator * (const Rational& arg) const {
+        return Rational(
+                this->numerator * arg.numerator,
+                this->denominator * arg.denominator);
+    }
+
+    Rational operator / (const Rational& arg) const {
+        return Rational(
+                this->numerator * arg.denominator,
+                this->denominator * arg.numerator);
+    }
+
+    Rational& operator += (const Rational& arg) {
+        return *this = *this + arg;
+    }
+
+    Rational& operator -= (const Rational& arg) {
         return *this = *this - arg;
     }
 
-    Rational operator *= (const Rational arg) {
+    Rational& operator *= (const Rational& arg) {
         return *this = *this * arg;
     }
 
-    Rational operator /= (const Rational arg) {
+    Rational& operator /= (const Rational& arg) {
         return *this = *this / arg;
     }
 

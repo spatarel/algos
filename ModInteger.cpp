@@ -4,105 +4,96 @@
 template <unsigned long long MOD>
 class ModInteger {
 private:
-    unsigned long long V;
+    unsigned long long value;
 
-    unsigned long long powPrivate(unsigned int exp) const {
-        unsigned long long pows[33];
-        int i;
+public:
+    ModInteger() {
+        this->value = 0;
+    }
+
+    ModInteger(const unsigned long long& arg) {
+        this->value = arg % MOD;
+    }
+
+    unsigned long long getllu() const {
+        return this->value;
+    }
+
+    long long getlld() const {
+        return this->value;
+    }
+
+    unsigned int getu() const {
+        return this->value;
+    }
+
+    int getd() const {
+        return this->value;
+    }
+
+    bool operator == (const ModInteger& arg) const {
+        return this->value == arg.value;
+    }
+
+    bool operator != (const ModInteger& arg) const {
+        return this->value != arg.value;
+    }
+
+    ModInteger operator + (const ModInteger& arg) const {
+        return ModInteger(this->value + arg.value);
+    }
+
+    ModInteger& operator += (const ModInteger& arg) {
+        this->value = (this->value + arg.value) % MOD;
+        return *this;
+    }
+
+    ModInteger operator - () const {
+        return ModInteger(MOD - this->value);
+    }
+
+    ModInteger operator - (const ModInteger& arg) const {
+        //return ModInteger(this->value + (-arg).value);
+        return ModInteger(this->value + (MOD - arg.value));
+    }
+
+    ModInteger& operator -= (const ModInteger& arg) {
+        //this->value = (this->value + (-arg).value) % MOD;
+        this->value = (this->value + (MOD - arg.value)) % MOD;
+        return *this;
+    }
+
+    ModInteger operator * (const ModInteger& arg) const {
+        return ModInteger(this->value * arg.value);
+    }
+
+    ModInteger& operator *= (const ModInteger& arg) {
+        this->value = (this->value * arg.value) % MOD;
+        return *this;
+    }
+
+    ModInteger pow(unsigned int exp) const {
         unsigned long long answer = 1;
-        pows[0] = this->V;
-        for(i = 0; exp > 0; exp >>= 1, ++i) {
+        unsigned long long power = this->value;
+        for(; exp > 0; exp >>= 1) {
             if ((exp & 1) > 0) {
-                answer = (answer * pows[i]) % MOD;
+                answer = (answer * power) % MOD;
             }
-            pows[i + 1] = (pows[i] * pows[i]) % MOD;
+            power = (power * power) % MOD;
         }
         return answer;
     }
 
-public:
-    ModInteger() {
-        this->V = 0;
-    }
-
-    ModInteger(unsigned long long V) {
-        this->V = V % MOD;
-    }
-
-    unsigned long long getllu() const {
-        return this->V;
-    }
-
-    long long getlld() const {
-        return this->V;
-    }
-
-    unsigned int getu() const {
-        return this->V;
-    }
-
-    int getd() const {
-        return this->V;
-    }
-
-    bool operator == (const ModInteger<MOD> &B) const {
-        return this->V == B.V;
-    }
-
-    bool operator != (const ModInteger<MOD> &B) const {
-        return this->V != B.V;
-    }
-
-    ModInteger<MOD> operator + (const ModInteger<MOD> &B) const {
-        ModInteger<MOD> sol(this->V + B.V);
-        return sol;
-    }
-
-    ModInteger<MOD> operator += (const ModInteger<MOD> &B) {
-        this->V = (this->V + B.V) % MOD;
-        return *this;
-    }
-
-    ModInteger<MOD> operator - () const {
-        ModInteger<MOD> sol(MOD - this->V);
-        return sol;
-    }
-
-    ModInteger<MOD> operator - (const ModInteger<MOD> &B) const {
-        ModInteger<MOD> sol(this->V + (-B).V);
-        return sol;
-    }
-
-    ModInteger<MOD> operator -= (const ModInteger<MOD> &B) {
-        this->V = (this->V + (-B).V) % MOD;
-        return *this;
-    }
-
-    ModInteger<MOD> operator * (const ModInteger<MOD> &B) const {
-        ModInteger<MOD> sol(this->V * B.V);
-        return sol;
-    }
-
-    ModInteger<MOD> operator *= (const ModInteger<MOD> &B) {
-        this->V = (this->V * B.V) % MOD;
-        return *this;
-    }
-
-    ModInteger<MOD> pow(const unsigned int exp) const {
-        return this->powPrivate(exp);
-    }
-
-    ModInteger<MOD> inverse() const {
+    ModInteger inverse() const {
         return this->pow(MOD - 2);
     }
 
-    ModInteger<MOD> operator / (const ModInteger<MOD> &B) const {
-        ModInteger<MOD> sol(this->V * B.inverse().V);
-        return sol;
+    ModInteger operator / (const ModInteger& arg) const {
+        return ModInteger(this->value * arg.inverse().value);
     }
 
-    ModInteger<MOD> operator /= (const ModInteger<MOD> &B) {
-        this->V = (this->V * B.inverse().V) % MOD;
+    ModInteger& operator /= (const ModInteger& arg) {
+        this->value = (this->value * arg.inverse().value) % MOD;
         return *this;
     }
 };
@@ -112,8 +103,8 @@ int main(void) {
     unsigned long long c = a * a * a * a * a * a * a;
     ModInteger<1000000007> A = 1000;
     ModInteger<1000000007> B = 6;
-    //ModInteger<1000000007> C = (A * A * A) * (A * A * A) * (A * A * A);
-    ModInteger<1000000007> C = ((((((((A * A) * A) * A) * A) * A) * A) * A) * A);
+    ModInteger<1000000007> C = (A * A * A) * (A * A * A) * (A * A * A);
+    //ModInteger<1000000007> C = ((((((((A * A) * A) * A) * A) * A) * A) * A) * A);
     //C = A;
     //C -= B;
     printf("%llu\n", c);

@@ -4,10 +4,11 @@
 
 using namespace std;
 
+template<class T>
 class Set {
 private:
-    int size;
-    int *values;
+    unsigned int size;
+    T* values;
 
 public:
     Set() {
@@ -17,20 +18,30 @@ public:
 
     Set(const Set& arg) {
         this->size = arg.size;
-        this->values = new int[this->size];
-        memcpy(this->values, arg.values, sizeof(int) * this->size);
+        if (this->size == 0) {
+            this->values = NULL;
+        } else {
+            this->values = new int[this->size];
+            memcpy(this->values, arg.values, sizeof(int) * this->size);
+        }
     }
 
-    Set(const int size, const int *values) {
+    Set(const unsigned int& size, const T* values) {
         this->size = size;
-        this->values = new int[this->size];
-        memcpy(this->values, values, sizeof(int) * this->size);
+        if (this->size == 0) {
+            this->values = NULL;
+        } else {
+            this->values = new T[this->size];
+            unsigned int i;
+            for (i = 0; i < this->size; ++i) {
+                this->values[i] = values[i];
+            }
+        }
     }
 
     Set operator = (const Set& arg) {
-        if (this->values != NULL) {
-            delete this->values;
-        }
+        delete this->values;
+
         this->size = arg.size;
         this->values = new int[this->size];
         memcpy(this->values, arg.values, sizeof(int) * this->size);
@@ -38,9 +49,9 @@ public:
     }
 
     Set join(const Set& arg) const {
-        int i, j;
+        unsigned int i, j;
 
-        int answerSize;
+        unsigned int answerSize;
         int* answer = new int[this->size + arg.size];
 
         answerSize = 0;
@@ -70,16 +81,15 @@ public:
             ++j;
             ++answerSize;
         }
-        printf("answerSize = %d\n", answerSize);
         Set set = Set(answerSize, answer);
         delete answer;
         return set;
     }
 
     Set intersect(const Set& arg) const {
-        int i, j;
+        unsigned int i, j;
 
-        int answerSize;
+        unsigned int answerSize;
         int* answer = new int[min(this->size, arg.size)];
 
         answerSize = 0;
@@ -101,9 +111,9 @@ public:
     }
 
     Set subtract(const Set& arg) const {
-        int i, j;
+        unsigned int i, j;
 
-        int answerSize;
+        unsigned int answerSize;
         int* answer = new int[this->size];
 
         answerSize = 0;
@@ -137,6 +147,16 @@ public:
         return this->values;
     }
 
+    bool contains(T arg) const {
+        unsigned int i;
+        for (i = 0; i < this->size; ++i) { // TODO: replace with binary search
+            if (this->values[i] == arg) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ~Set() {
         if (this->values != NULL) {
             delete this->values;
@@ -144,7 +164,7 @@ public:
     }
 };
 
-Set readSet() {
+Set<int> readSet() {
     int i;
     int size;
     scanf("%d", &size);
@@ -152,8 +172,7 @@ Set readSet() {
     for (i = 0; i < size; ++i) {
         scanf("%d", &values[i]);
     }
-    Set set = Set(size, values);
+    Set<int> set = Set<int>(size, values);
     delete values;
     return set;
 }
-
