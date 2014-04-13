@@ -1,56 +1,60 @@
+template<class T>
 class Heap {
 private:
-    int Vec0;
-    int* Vec;
+    int containerSize;
+    T* container;
 
-    inline void swap(int &a, int &b) {
-        a ^= b;
-        b ^= a;
-        a ^= b;
+    static inline void swap(T &a, T &b) {
+        T tmp = a;
+        a = b;
+        b = tmp;
     }
 
-    void rise(int pos) {
-        while (pos > 1 && Vec[pos] < Vec[pos>>1]) {
-            swap(Vec[pos], Vec[pos>>1]);
-            pos>>=1;
+    void rise(int position) {
+        while (position > 1 && this->container[position] < this->container[position >> 1]) {
+            swap(this->container[position], this->container[position >> 1]);
+            position >>= 1;
         }
     }
 
     void sink() {
         int pos = 1;
-        while ((pos<<1 <= Vec0 && Vec[pos] > Vec[pos<<1]) || ((pos<<1) + 1 <= Vec0 && Vec[pos] > Vec[(pos<<1) + 1])) {
-            if ((pos<<1) + 1 <= Vec0 && Vec[(pos<<1) + 1] < Vec[pos<<1]) {
-                swap(Vec[pos], Vec[(pos<<1) + 1]);
-                pos = (pos<<1) + 1;
-            }else{
-                swap(Vec[pos], Vec[pos<<1]);
-                pos = pos<<1;
+        while (((pos << 1) <= this->containerSize && this->container[pos << 1] < this->container[pos]) || (((pos << 1) + 1) <= this->containerSize && this->container[(pos << 1) + 1] < this->container[pos])) {
+            if ((pos << 1) + 1 <= this->containerSize && this->container[(pos << 1) + 1] < this->container[pos << 1]) {
+                swap(this->container[pos], this->container[(pos << 1) + 1]);
+                pos = (pos << 1) + 1;
+            } else {
+                swap(this->container[pos], this->container[pos << 1]);
+                pos = pos << 1;
             }
         }
     }
 
 public:
-    Heap(int size) {
-        Vec0 = 0;
-        Vec = new int[size + 1];
+    Heap(int maximumSize) {
+        this->containerSize = 0;
+        this->container = new T[maximumSize + 1];
     }
 
-    void add(int val) {
-        Vec[++Vec0] = val;
-        rise(Vec0);
+    void add(T newValue) {
+        this->container[++this->containerSize] = newValue;
+        rise(this->containerSize);
     }
 
-    void remove() {
-        Vec[1] = Vec[Vec0--];
+    void removeMinimum() {
+        this->container[1] = this->container[this->containerSize--];
         sink();
     }
 
-    int getMin() {
-        return Vec[1];
+    T getMinimum() {
+        return this->container[1];
+    }
+
+    int getSize() {
+        return this->containerSize;
     }
 
     ~Heap() {
-        delete Vec;
+        delete this->container;
     }
 };
-

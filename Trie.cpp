@@ -1,71 +1,67 @@
 #include <stdlib.h>
 
-#define QSIZE 26
+const int TRIE_SIZE = 26;
 
 class Trie {
 private:
-    char first;
-    struct Nod {
-        bool este;
-        Nod* fii[QSIZE];
-    };
-    Nod* root;
+    class TrieNode {
+    public:
+        bool exists;
+        TrieNode* descendents[TRIE_SIZE];
 
-    Nod* new_nod() {
-        int i;
-        Nod* nod = (Nod*) malloc(sizeof(Nod));
-        nod->este = false;
-        nod->fii['0' - this->first] = NULL;
-        for (i = 'A' - this->first; i <= 'Z' - this->first; ++i) {
-            nod->fii[i] = NULL;
-        }
-        for (i = 'a' - this->first; i <= 'z' - this->first; ++i) {
-            nod->fii[i] = NULL;
-        }
-        return nod;
-    }
-
-    void free_nod(Nod* nod) {
-        int i;
-        for (i = 0; i < QSIZE; ++i) {
-            if (nod->fii[i] != NULL) {
-                free_nod(nod->fii[i]);
+        TrieNode() {
+            int i;
+            this->exists = false;
+            for (i = 0; i < TRIE_SIZE; ++i) {
+                this->descendents[i] = NULL;
             }
         }
-        free(nod);
-    }
+
+        ~TrieNode() {
+            int i;
+            for (i = 0; i < TRIE_SIZE; ++i) {
+                if (this->descendents[i] != NULL) {
+                    delete this->descendents[i];
+                }
+            }
+        }
+
+    };
+
+    char first;
+    TrieNode* root;
 
 public:
     Trie(char first, char last) {
-        //assert(last - first + 1 == QSIZE);
+        //assert(last - first + 1 == TRIE_SIZE);
         this->first = first;
-        this->root = new_nod();
+        this->root = new TrieNode();
     }
 
-    void add(char* V) {
+    void add(char* word) {
         int i;
-        Nod* pos;
-        for(i = 0, pos = this->root; V[i] != 0; pos = pos->fii[V[i] - this->first], ++i) {
-            if (pos->fii[V[i] - this->first] == NULL) {
-                pos->fii[V[i] - this->first] = new_nod();
+        TrieNode* pos;
+        for (i = 0, pos = this->root; word[i] != 0; pos = pos->descendents[word[i] - this->first], ++i) {
+            if (pos->descendents[word[i] - this->first] == NULL) {
+                pos->descendents[word[i] - this->first] = new TrieNode();
             }
         }
-        pos->este = true;
+        pos->exists = true;
     }
 
-    bool find(char* V) {
+    bool exists(char* word) {
         int i;
-        Nod* pos;
-        for(i = 0, pos = this->root; V[i] != 0; pos = pos->fii[V[i] - this->first], ++i) {
-            if (pos->fii[V[i] - this->first] == NULL) {
+        TrieNode* pos;
+        for (i = 0, pos = this->root; word[i] != 0; pos = pos->descendents[word[i] - this->first], ++i) {
+            if (pos->descendents[word[i] - this->first] == NULL) {
                 return false;
             }
         }
-        return pos->este;
+        return pos->exists;
     }
 
     ~Trie() {
-        free_nod(this->root);
+        delete this->root;
     }
 };
 
