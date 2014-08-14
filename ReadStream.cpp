@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 
 template<int SIZE>
 class ReadStream {
@@ -46,5 +46,15 @@ public:
         }
 
         return answer;
+    }
+
+    char nextChar() {
+        int readSize;
+		if (this->pos == SIZE) {
+			readSize = fread(this->buffer, sizeof(char), SIZE, this->stream);
+			this->buffer[readSize] = 0;
+			this->pos = 0;
+		}
+		return this->buffer[this->pos++];
     }
 };
