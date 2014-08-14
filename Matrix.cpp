@@ -75,7 +75,7 @@ public:
         return *this;
     }
 
-    Matrix<T> operator *= (const T b) {
+    Matrix<T> operator *= (const T &b) const {
         int i, j;
         for (i = 0; i < this->a; ++i) {
             for (j = 0; j < this->b; ++j) {
@@ -85,11 +85,11 @@ public:
         return *this;
     }
 
-    Matrix<T> operator *= (const Matrix<T> b) {
+    Matrix<T> operator *= (const Matrix<T> &b) {
         return *this = *this * b;
     }
 
-    Matrix<T> operator * (const T b) {
+    Matrix<T> operator * (const T &b) const {
         int i, j;
         Matrix<T> sol(this->a, this->b);
         for (i = 0; i < this->a; ++i) {
@@ -100,7 +100,11 @@ public:
         return sol;
     }
 
-    Matrix<T> operator * (const Matrix<T> b) const {
+    Matrix<T> friend operator * (const T &b, const Matrix<T> &a) {
+        return a * b;
+    }
+
+    Matrix<T> operator * (const Matrix<T> &b) const {
         assert(this->b == b.a);
         Matrix<T> sol(this->a, b.b);
         int i, j, k;
@@ -115,7 +119,7 @@ public:
         return sol;
     }
 
-    Matrix<T> operator += (const Matrix<T> b) const {
+    Matrix<T> operator += (const Matrix<T> &b) const {
         assert(this->a == b.a && this->b == b.b);
         int i, j;
         for (i = 0; i < this->a; ++i) {
@@ -189,6 +193,41 @@ public:
             return sol;
         }
     }
+
+    void LUDecompose(Matrix<T> &L, Matrix<T> &U) const {
+        assert(this->a == b);
+        assert(L.a == this->a && L.b == this->b);
+        assert(U.a == this->a && U.b == this->b);
+        int i, j, k;
+        for (i = 0; i < this->a; ++i) {
+            for (j = 0; j < this->a; ++j) {
+                L[i][j] = 0;
+                U[i][j] = (*this)[i][j];
+            }
+        }
+        for (j = 0; j < this->a; ++j) { // j = coloana care se face 0
+            L[j][j] = 1;
+            for (i = j + 1; i < this->a; ++i) { // i = linia care se face 0
+                L[i][j] = U[i][j] / U[j][j];
+                for (k = j + 1; k < this->a; ++k) { // k = coloana care se scade
+                    U[i][k] = U[i][k] - U[j][k] * L[i][j];
+                }
+                U[i][j] = 0;
+            }
+        }
+    }
+
+    T determinant() const {
+        // assert(this->a == this->b)
+        int i;
+        Matrix<T> L(this->a, this->b), U(this->a, this->b);
+        this->LUDecompose(L, U);
+        T answer = U[0][0];
+        for (i = 1; i < this->a; ++i) {
+            answer *= U[i][i];
+        }
+        return answer;
+    }
 };
 
 int main(void) {
@@ -209,6 +248,8 @@ int main(void) {
     C = A;
     C *= A;
     C *= 5;
+    C = 5 * C;
+    C = C * 5;
     C = A;
     C = A + -A;
 
@@ -219,6 +260,29 @@ int main(void) {
         }
         printf("\n");
     }
+    printf("\n");
+
+    Matrix<float> M(3, 3), L(3, 3), U(3, 3);
+    M[0][0] = 2; M[0][1] = 5; M[0][2] = 3;
+    M[1][0] = 3; M[1][1] = 1; M[1][2] =-2;
+    M[2][0] =-1; M[2][1] = 2; M[2][2] = 1;
+    M.LUDecompose(L, U);
+    for (i = 0; i < 3; ++i) {
+        for (j = 0; j < 3; ++j) {
+            printf("%lf ", L[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    for (i = 0; i < 3; ++i) {
+        for (j = 0; j < 3; ++j) {
+            printf("%lf ", U[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    printf("%lf\n", M.determinant());
+
     return 0;
 }
-

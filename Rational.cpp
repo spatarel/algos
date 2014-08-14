@@ -25,7 +25,7 @@ private:
         T a = Rational::abs(this->numerator);
         T b = Rational::abs(this->denominator);
         T c;
-        for (;b > 0;) {
+        while (b > 0) {
             c = a % b;
             a = b;
             b = c;
@@ -63,6 +63,18 @@ public:
         } else {
             return -*this;
         }
+    }
+
+    Rational& operator = (const Rational& arg) {
+        this->numerator = arg.numerator;
+        this->denominator = arg.denominator;
+        return *this;
+    }
+
+    Rational& operator = (const T& value) {
+        this->numerator = value;
+        this->denominator = 1;
+        return *this;
     }
 
     bool operator == (const Rational& arg) const {

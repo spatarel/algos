@@ -89,9 +89,11 @@ public:
 };
 
 
+template<class UpdateType, class QueryType>
 class SegmentTree {
 private:
-    int N;
+    int x1;
+    int x2;
     UpdateType** tree;
     QueryType** comb;
     bool* updated;
@@ -126,18 +128,18 @@ private:
     //            (*comb[2 * pos + 1] + *tree[2 * pos + 1]);
     }
 
-    QueryType real_lazy_query(int pos, int start, int stop) {
+    QueryType real_lazy_query(int pos) {
         if (!this->updated[pos]) {
             this->updated[pos] = true;
-            *this->comb[pos] = (this->real_lazy_query(2 * pos, start, stop) + *this->tree[2 * pos]) *
-                    (this->real_lazy_query(2 * pos + 1, start, stop) + *this->tree[2 * pos + 1]);
+            *this->comb[pos] = (this->real_lazy_query(2 * pos) + *this->tree[2 * pos]) *
+                    (this->real_lazy_query(2 * pos + 1) + *this->tree[2 * pos + 1]);
         }
         return *this->comb[pos];
     }
 
     QueryType real_query_interval(int pos, int start, int stop, int x1, int x2) {
         if (start == x1 && stop == x2) {
-            return this->real_lazy_query(pos, start, stop) + *this->tree[pos];
+            return this->real_lazy_query(pos) + *this->tree[pos];
         }
         int med = (start + stop) / 2;
         // ASSERT
@@ -155,30 +157,31 @@ private:
     }
 
 public:
-    SegmentTree(int N) {
+    SegmentTree(int x1, int x2) {
         int i;
 
         int n;
         int limit = 2;
-        for (n = N - 1; n > 0; n >>= 1) limit <<= 1;
+        for (n = (x2 - x1 + 1) - 1; n > 0; n >>= 1) limit <<= 1;
 
-        this->N = N;
+        this->x1 = x1;
+        this->x2 = x2;
         this->tree = new UpdateType*[limit];
         this->comb = new QueryType*[limit];
         this->updated = new bool[limit];
 
-        this->real_init(1, 1, this->N);
+        this->real_init(1, x1, x2);
         for (i = 0; i < limit; ++i) {
             this->updated[i] = true;
         }
     }
 
     void update_interval(int x1, int x2, UpdateType u) {
-        this->real_update_interval(1, 1, this->N, x1, x2, u);
+        this->real_update_interval(1, this->x1, this->x2, x1, x2, u);
     }
 
     QueryType query_interval(int x1, int x2) {
-        return this->real_query_interval(1, 1, this->N, x1, x2);
+        return this->real_query_interval(1, this->x1, this->x2, x1, x2);
     }
 };
 
@@ -192,7 +195,7 @@ int main(void) {
     // citirea datelor
     scanf("%d %d", &N, &M);
     --N;
-    SegmentTree *ST = new SegmentTree(N);
+    SegmentTree<UpdateType, QueryType> *ST = new SegmentTree<UpdateType, QueryType>(1, N);
     for (i = 0; i < M; ++i) {
         scanf("\n%s", Q);
         if (Q[0] == 'c') {
