@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 
 class UpdateType {
     long long val;

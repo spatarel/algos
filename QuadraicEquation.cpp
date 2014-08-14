@@ -1,3 +1,5 @@
+#include <cmath>
+
 class QuadraicEquation {
 private:
     double a;

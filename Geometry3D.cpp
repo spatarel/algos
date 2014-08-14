@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 class Math {
 public:

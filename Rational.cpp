@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 
 template<class T>
 class Rational {
