@@ -681,7 +681,7 @@ HugeInt<> fct(const HugeInt<> nr) {
 }
 
 #include <ctime>
-#include <assert.h>
+#include <cassert>
 
 // Program scris special pentru depanarea functiilor.
 int main(void) {
