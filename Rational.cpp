@@ -1,4 +1,7 @@
 #include <cassert>
+#include <iostream>
+
+using namespace std;
 
 template<class T>
 class Rational {
@@ -51,7 +54,7 @@ public:
     }
 
     Rational(const T& numerator, const T& denominator) {
-        assert(denominator != 0);
+        assert(denominator != (T)0);
         this->numerator = numerator;
         this->denominator = denominator;
         this->simplify();
@@ -157,5 +160,10 @@ public:
 
     T getDenominator() const {
         return this->denominator;
+    }
+
+    friend ostream& operator << (ostream& stream, const Rational& arg) {
+        stream << arg.numerator << '/' << arg.denominator;
+        return stream;
     }
 };
