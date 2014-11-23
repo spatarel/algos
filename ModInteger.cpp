@@ -35,12 +35,24 @@ public:
         return this->value == arg.value;
     }
 
+    friend bool operator == (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 == arg2;
+    }
+
     bool operator != (const ModInteger& arg) const {
         return this->value != arg.value;
     }
 
+    friend bool operator != (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 != arg2;
+    }
+
     ModInteger operator + (const ModInteger& arg) const {
         return ModInteger(this->value + arg.value);
+    }
+
+    friend ModInteger operator + (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 + arg2;
     }
 
     ModInteger& operator += (const ModInteger& arg) {
@@ -57,6 +69,10 @@ public:
         return ModInteger(this->value + (MOD - arg.value));
     }
 
+    friend ModInteger operator - (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 - arg2;
+    }
+
     ModInteger& operator -= (const ModInteger& arg) {
         //this->value = (this->value + (-arg).value) % MOD;
         this->value = (this->value + (MOD - arg.value)) % MOD;
@@ -67,6 +83,10 @@ public:
         return ModInteger(this->value * arg.value);
     }
 
+    friend ModInteger operator * (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 * arg2;
+    }
+
     ModInteger& operator *= (const ModInteger& arg) {
         this->value = (this->value * arg.value) % MOD;
         return *this;
@@ -75,11 +95,12 @@ public:
     ModInteger pow(unsigned long long exp) const {
         unsigned long long answer = 1;
         unsigned long long power = this->value;
-        for(; exp > 0; exp >>= 1) {
+        while(exp > 0) {
             if ((exp & 1) > 0) {
                 answer = (answer * power) % MOD;
             }
             power = (power * power) % MOD;
+            exp >>= 1;
         }
         return answer;
     }
@@ -90,6 +111,10 @@ public:
 
     ModInteger operator / (const ModInteger& arg) const {
         return ModInteger(this->value * arg.inverse().value);
+    }
+
+    friend ModInteger operator / (const unsigned long long& arg1, const ModInteger& arg2) {
+        return (const ModInteger)arg1 / arg2;
     }
 
     ModInteger& operator /= (const ModInteger& arg) {
