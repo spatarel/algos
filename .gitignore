@@ -1,5 +1,2 @@
-Debug/
-Release/
-.project
-.cproject
-
+.*
+Debug/*
