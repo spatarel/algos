@@ -16,7 +16,7 @@ private:
         for (i = 0; i < a; ++i) {
             A[i] = (T*)(malloc(b * sizeof(T)));
             for (j = 0; j < b; ++j) {
-                A[i][j] = 0;
+                A[i][j] = (T)0;
             }
         }
         return A;
@@ -27,7 +27,7 @@ public:
         Matrix<T> A(a, a);
         int i;
         for (i = 0; i < a; ++i) {
-            A[i][i] = 1;
+            A[i][i] = (T)1;
         }
         return A;
     }
@@ -110,7 +110,7 @@ public:
         int i, j, k;
         for (i = 0; i < this->a; ++i) {
             for (j = 0; j < b.b; ++j) {
-                sol[i][j] = 0;
+                sol[i][j] = (T)0;
                 for (k = 0; k < this->b; ++k) {
                     sol[i][j] += (*this)[i][k] * b[k][j];
                 }
@@ -176,22 +176,20 @@ public:
         return sol;
     }
 
-    Matrix<T> operator ^ (const unsigned long long exp) const {
+    Matrix<T> operator ^ (unsigned long long exp) const {
         assert(this->a == this->b);
-        if (exp == 0) {
-            return Matrix<T>::Id(this->a);
-        } else if (exp == 1) {
-            return *this;
-        } else {
-            int part = exp / 2;
-            int rest = exp % 2;
-            Matrix<T> sol = *this ^ part;
-            sol *= sol;
-            if (rest == 1) {
-                sol *= *this;
+        Matrix<T> answer = Matrix<T>::Id(this->a);
+        Matrix<T> power = *this;
+        int i = 0;
+        while (exp > 0) {
+            if (exp & ((unsigned long long)1 << i)) {
+                exp ^= (unsigned long long)1 << i;
+                answer *= power;
             }
-            return sol;
+            ++i;
+            power *= power;
         }
+        return answer;
     }
 
     void LUDecompose(Matrix<T> &L, Matrix<T> &U) const {
