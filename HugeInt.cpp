@@ -1,107 +1,115 @@
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
 
-template<int size = 100>
+using namespace std;
+
 class HugeInt {
 public:
-    int Semn;
-    int Cont;
-    int V[size];
+    int sign;
+    int size;
+    int *V;
 
 private:
     static const int BASE;
     static const int SCAN_POWER;
     static const char* PRINT_FORMAT;
 
-    HugeInt unsignedAddition(const HugeInt& arg) const {
+    HugeInt unsignedAddition(const HugeInt& arg, int newSign) const {
         HugeInt answer;
+        answer.alloc(max(this->size, arg.size) + 2);
         int i;
-        int min = this->Cont < arg.Cont ? this->Cont : arg.Cont;
+        int min = this->size < arg.size ? this->size : arg.size;
         for (i = 0; i <= min; ++i) {
             answer.V[i] = this->V[i] + arg.V[i];
         }
-        for (; i <= this->Cont; ++i) {
+        for (; i <= this->size; ++i) {
             answer.V[i] = this->V[i];
         }
-        for (; i <= arg.Cont; ++i) {
+        for (; i <= arg.size; ++i) {
             answer.V[i] = arg.V[i];
         }
         answer.V[i] = 0;
-        answer.Cont = i - 1;
-        for (i = 0; i <= answer.Cont; ++i) {
+        answer.size = i - 1;
+        for (i = 0; i <= answer.size; ++i) {
             if (answer.V[i] >= BASE) {
                 answer.V[i] -= BASE;
                 ++answer.V[i + 1];
             }
         }
         if (answer.V[i] > 0) {
-            ++answer.Cont;
+            ++answer.size;
         }
+        answer.sign = newSign;
         return answer;
     }
 
-    HugeInt unsignedSubtraction(const HugeInt& arg) const {
+    HugeInt unsignedSubtraction(const HugeInt& arg, int newSign) const {
         HugeInt answer;
+        answer.alloc(max(this->size, arg.size) + 2);
         int i;
-        int min = this->Cont < arg.Cont ? this->Cont : arg.Cont;
+        int min = this->size < arg.size ? this->size : arg.size;
         for (i = 0; i <= min; ++i) {
             answer.V[i] = this->V[i] - arg.V[i];
         }
-        for (; i <= this->Cont; ++i) {
+        for (; i <= this->size; ++i) {
             answer.V[i] = this->V[i];
         }
-        for (; i <= arg.Cont; ++i) {
+        for (; i <= arg.size; ++i) {
             answer.V[i] = -arg.V[i];
         }
-        answer.Cont = i - 1;
-        for (i = 0; i <= answer.Cont; ++i) {
+        answer.size = i - 1;
+        for (i = 0; i <= answer.size; ++i) {
             if (answer.V[i] < 0) {
                 answer.V[i] += BASE;
                 --answer.V[i + 1];
             }
         }
-        for (; answer.V[answer.Cont] == 0 && answer.Cont > 0; --answer.Cont);
+        for (; answer.V[answer.size] == 0 && answer.size > 0; --answer.size);
+        answer.sign = newSign;
         return answer;
     }
 
     HugeInt digitMultiplication(const int& arg) const {
         HugeInt answer;
+        answer.alloc(this->size + 3);
         int myArg = arg;
         if (myArg < 0) {
             myArg = -myArg;
-            if (this->Semn == -1) answer.Semn = 1;
-            else answer.Semn = -1;
+            if (this->sign == -1) answer.sign = 1;
+            else answer.sign = -1;
         } else {
-            answer.Semn = this->Semn;
+            answer.sign = this->sign;
         }
         int i;
         long long tmp;
-        for (i = 0; i <= this->Cont + 1; ++i) {
+        for (i = 0; i <= this->size + 1; ++i) {
             answer.V[i] = 0;
         }
-        for (i = 0; i <= this->Cont; ++i) {
+        for (i = 0; i <= this->size; ++i) {
             tmp = (long long)this->V[i] * myArg + answer.V[i];
             answer.V[i] = (int)(tmp % BASE);
             //A.V[i + 1] = (tmp - A.V[a]) / BASE;
             answer.V[i + 1] = (int)(tmp / BASE);
         }
-        if (answer.V[this->Cont + 1]) {
-            answer.Cont = this->Cont + 1;
+        if (answer.V[this->size + 1]) {
+            answer.size = this->size + 1;
         } else {
-            answer.Cont = this->Cont;
+            answer.size = this->size;
         }
         return answer;
     }
 
     HugeInt baseMultiplication(const unsigned int& arg) const {
-        if (this->Cont == 0 && this->V[0] == 0) {
+        if (this->size == 0 && this->V[0] == 0) {
             return *this;
         }
         int i, j;
         HugeInt answer;
-        answer.Semn = this->Semn;
-        answer.Cont = this->Cont + arg;
-        for (i = answer.Cont, j = this->Cont; j >= 0; --i, --j) {
+        answer.alloc(this->size + arg + 2);
+        answer.sign = this->sign;
+        answer.size = this->size + arg;
+        for (i = answer.size, j = this->size; j >= 0; --i, --j) {
             answer.V[i] = this->V[j];
         }
         for (; i >= 0; --i) {
@@ -112,30 +120,31 @@ private:
 
     HugeInt digitDivision(const int& arg) const {
         HugeInt answer;
+        answer.alloc(this->size + 2);
         int myArg = arg;
         if (myArg < 0) {
             myArg = -myArg;
-            if (this->Semn == -1) answer.Semn = 1;
-            else answer.Semn = -1;
+            if (this->sign == -1) answer.sign = 1;
+            else answer.sign = -1;
         } else {
-            answer.Semn = this->Semn;
+            answer.sign = this->sign;
         }
         int i;
         long long tmp1, tmp2;
-        tmp1 = this->V[this->Cont];
-        for (i = this->Cont; i >= 0; --i) {
+        tmp1 = this->V[this->size];
+        for (i = this->size; i >= 0; --i) {
             tmp2 = tmp1 % myArg;
             tmp1 -= tmp2;
             answer.V[i] = (int)(tmp1 / myArg);
             if (i) tmp1 = tmp2 * BASE + this->V[i - 1];
         }
-        if (answer.V[this->Cont] > 0) {
-            answer.Cont = this->Cont;
+        if (answer.V[this->size] > 0) {
+            answer.size = this->size;
         } else {
-            if (this->Cont > 0) {
-                answer.Cont = this->Cont - 1;
+            if (this->size > 0) {
+                answer.size = this->size - 1;
             } else {
-                answer.Cont = this->Cont;
+                answer.size = this->size;
             }
         }
         return answer;
@@ -144,7 +153,7 @@ private:
     int digitRemainder(const int& arg) const {
         long long answer = 0;
         int i;
-        for(i = this->Cont; i >= 0; --i) {
+        for(i = this->size; i >= 0; --i) {
             answer *= BASE;
             answer += this->V[i];
             answer %= arg;
@@ -152,38 +161,71 @@ private:
         return (int)answer;
     }
 
+    void alloc(int size) {
+        if (this->V != NULL) {
+            delete this->V;
+        }
+        this->V = new int[size];
+    }
+
+    void realloc(int oldSize, int newSize) {
+        if (this->V == NULL) {
+            this->V = new int[newSize];
+        } else {
+            int i;
+            int* oldV = this->V;
+            this->V = new int[newSize];
+            for (i = 0; i < oldSize; ++i) {
+                this->V[i] = oldV[i];
+            }
+            delete oldV;
+        }
+    }
+
 public:
     HugeInt() {
+        this->V = NULL;
         *this = 0;
     }
 
     HugeInt(const long long& arg) {
+        this->V = NULL;
         *this = arg;
     }
 
+    HugeInt(const HugeInt& arg) {
+        this->V = NULL;
+        this->alloc(arg.size + 1);
+        this->size = arg.size;
+        this->sign = arg.sign;
+        memcpy(this->V, arg.V, sizeof(int) * (this->size + 1));
+    }
+
     HugeInt& operator =(const long long& arg) {
-        this->V[0] = this->Cont = 0;
+        this->alloc(3);
+        this->V[0] = this->size = 0;
         long long myArg = arg;
         if (myArg < 0) {
             myArg = -myArg;
-            this->Semn = -1;
+            this->sign = -1;
         } else {
-            this->Semn = 1;
+            this->sign = 1;
         }
         while (myArg > 0) {
-            this->V[this->Cont++] = (int)(myArg % BASE);
+            this->V[this->size++] = (int)(myArg % BASE);
             myArg /= BASE;
         }
-        if (this->Cont > 0) {
-            --this->Cont;
+        if (this->size > 0) {
+            --this->size;
         }
         return *this;
     }
 
     HugeInt& operator =(const HugeInt& arg) {
-        this->Cont = arg.Cont;
-        this->Semn = arg.Semn;
-        memcpy(this->V, arg.V, sizeof(int) * (this->Cont + 1));
+        this->alloc(arg.size + 1);
+        this->size = arg.size;
+        this->sign = arg.sign;
+        memcpy(this->V, arg.V, sizeof(int) * (this->size + 1));
         return *this;
     }
 
@@ -192,25 +234,25 @@ public:
                 -1 daca A<B
     */
     static int compare(const HugeInt &arg1, const HugeInt &arg2) {
-        if (arg1.Semn != arg2.Semn) {
-            if (arg1.Semn==1) return 1;
+        if (arg1.sign != arg2.sign) {
+            if (arg1.sign==1) return 1;
             else return -1;
         } else {
-            if (arg1.Cont > arg2.Cont) {
-                if (arg1.Semn == 1) return 1;
+            if (arg1.size > arg2.size) {
+                if (arg1.sign == 1) return 1;
                 else return -1;
-            } else if (arg1.Cont < arg2.Cont) {
-                if (arg1.Semn == 1) return -1;
+            } else if (arg1.size < arg2.size) {
+                if (arg1.sign == 1) return -1;
                 else return 1;
             } else {
                 int i;
-                for (i = arg1.Cont; arg1.V[i] == arg2.V[i] && i >= 0; --i);
+                for (i = arg1.size; arg1.V[i] == arg2.V[i] && i >= 0; --i);
                 if (i >= 0) {
                     if (arg1.V[i] > arg2.V[i]) {
-                        if (arg1.Semn == 1) return 1;
+                        if (arg1.sign == 1) return 1;
                         else return -1;
                     } else {
-                        if (arg1.Semn == 1) return -1;
+                        if (arg1.sign == 1) return -1;
                         else return 1;
                     }
                 } else {
@@ -274,36 +316,28 @@ public:
 
     HugeInt operator -() const {
         HugeInt answer = *this;
-        answer.Semn = -answer.Semn;
+        answer.sign = -answer.sign;
         return answer;
     }
 
     HugeInt operator +(const HugeInt& arg) const {
-        HugeInt answer;
-        if (this->Semn == -1 && arg.Semn== -1) {
-            answer = this->unsignedAddition(arg);
-            answer.Semn = -1;
-        } else if (this->Semn == -1 && arg.Semn == 1) {
+        if (this->sign == -1 && arg.sign == -1) {
+            return this->unsignedAddition(arg, -1);
+        } else if (this->sign == -1 && arg.sign == 1) {
             if (-*this > arg) {
-                answer = this->unsignedSubtraction(arg);
-                answer.Semn = -1;
+                return this->unsignedSubtraction(arg, -1);
             } else {
-                answer = arg.unsignedSubtraction(*this);
-                answer.Semn = 1;
+                return arg.unsignedSubtraction(*this, 1);
             }
-        } else if (this->Semn == 1 && arg.Semn == -1) {
+        } else if (this->sign == 1 && arg.sign == -1) {
             if (*this >= -arg) {
-                answer = this->unsignedSubtraction(arg);
-                answer.Semn = 1;
+                return this->unsignedSubtraction(arg, 1);
             } else {
-                answer = arg.unsignedSubtraction(*this);
-                answer.Semn = -1;
+                return arg.unsignedSubtraction(*this, -1);
             }
-        } else if (this->Semn ==  1 && arg.Semn==  1) {
-            answer = this->unsignedAddition(arg);
-            answer.Semn = 1;
+        } else { // if (this->sign == 1 && arg.sign == 1) {
+            return this->unsignedAddition(arg, 1);
         }
-        return answer;
     }
 
     friend HugeInt operator +(const long long& arg1, const HugeInt& arg2) {
@@ -311,31 +345,23 @@ public:
     }
 
     HugeInt operator -(const HugeInt& arg) const {
-        HugeInt answer;
-        if (this->Semn == -1 && arg.Semn == -1) {
+        if (this->sign == -1 && arg.sign == -1) {
             if (*this >= arg) { // |this| < |B|
-                answer = arg.unsignedSubtraction(*this);
-                answer.Semn = 1;
+                return arg.unsignedSubtraction(*this, 1);
             } else {
-                answer = this->unsignedSubtraction(arg);
-                answer.Semn = -1;
+                return this->unsignedSubtraction(arg, -1);
             }
-        } else if (this->Semn == -1 && arg.Semn ==  1) {
-            answer = this->unsignedAddition(arg);
-            answer.Semn = -1;
-        } else if (this->Semn ==  1 && arg.Semn == -1) {
-            answer = this->unsignedAddition(arg);
-            answer.Semn = 1;
-        } else if (this->Semn ==  1 && arg.Semn ==  1) {
+        } else if (this->sign == -1 && arg.sign ==  1) {
+            return this->unsignedAddition(arg, -1);
+        } else if (this->sign ==  1 && arg.sign == -1) {
+            return this->unsignedAddition(arg, 1);
+        } else { // if (this->sign ==  1 && arg.sign ==  1) {
             if (*this >= arg) {
-                answer = this->unsignedSubtraction(arg);
-                answer.Semn = 1;
+                return this->unsignedSubtraction(arg, 1);
             } else {
-                answer = arg.unsignedSubtraction(*this);
-                answer.Semn = -1;
+                return arg.unsignedSubtraction(*this, -1);
             }
         }
-        return answer;
     }
 
     friend HugeInt operator -(const long long& arg1, const HugeInt& arg2) {
@@ -344,14 +370,14 @@ public:
 
     HugeInt& operator ++() { // prefix ++
         int i;
-        if (this->Semn == 1) {
+        if (this->sign == 1) {
             ++this->V[0];
             for (i = 0; this->V[i] == BASE; ++i) {
                 this->V[i] = 0;
                 ++this->V[i + 1];
             }
-            if (this->Cont < i) {
-                this->Cont = i;
+            if (this->size < i) {
+                this->size = i;
             }
         } else {
             --this->V[0];
@@ -359,12 +385,12 @@ public:
                 this->V[i] += BASE;
                 --this->V[i + 1];
             }
-            if (this->V[this->Cont] == 0) {
-                --this->Cont;
+            if (this->V[this->size] == 0) {
+                --this->size;
             }
-            if (this->Cont == -1) {
-                this->Semn = 1;
-                this->Cont = 0;
+            if (this->size == -1) {
+                this->sign = 1;
+                this->size = 0;
             }
         }
         return *this;
@@ -378,18 +404,18 @@ public:
 
     HugeInt& operator --() { // prefix --
         int i;
-        if (this->Semn == -1) {
+        if (this->sign == -1) {
             ++this->V[0];
             for (i = 0; this->V[i] == BASE; ++i) {
                 this->V[i] = 0;
                 ++this->V[i + 1];
             }
-            if (this->Cont < i) {
-                this->Cont = i;
+            if (this->size < i) {
+                this->size = i;
             }
         } else {
-            if (this->Cont == 0 && this->V[0] == 0) {
-                this->Semn = -1;
+            if (this->size == 0 && this->V[0] == 0) {
+                this->sign = -1;
                 this->V[0] = 1;
             } else {
                 --this->V[0];
@@ -397,11 +423,11 @@ public:
                     this->V[i] += BASE;
                     --this->V[i + 1];
                 }
-                if (this->V[this->Cont] == 0) {
-                    --this->Cont;
+                if (this->V[this->size] == 0) {
+                    --this->size;
                 }
-                if (this->Cont == -1) {
-                    this->Cont = 0;
+                if (this->size == -1) {
+                    this->size = 0;
                 }
             }
         }
@@ -419,21 +445,22 @@ public:
             return 0;
         }
         HugeInt answer;
-        answer.Semn = this->Semn * arg.Semn;
+        answer.alloc(this->size + arg.size + 4);
+        answer.sign = this->sign * arg.sign;
         HugeInt Tmp;
         int i, j;
-        for (i = 0; i <= this->Cont + arg.Cont + 1; ++i) {
+        for (i = 0; i <= this->size + arg.size + 1; ++i) {
             answer.V[i] = 0;
         }
-        for (i = 0; i <= arg.Cont; ++i) {
+        for (i = 0; i <= arg.size; ++i) {
             Tmp = this->digitMultiplication(arg.V[i]);
-            for(j = 0; j <= Tmp.Cont; ++j) {
+            for(j = 0; j <= Tmp.size; ++j) {
                 answer.V[i + j] += Tmp.V[j];
-                answer.Cont = i + j;
+                answer.size = i + j;
                 if (answer.V[i + j] >= BASE) {
                     answer.V[i + j] -= BASE;
                     ++answer.V[i + j + 1];
-                    answer.Cont = i + j + 1;
+                    answer.size = i + j + 1;
                 }
             }
         }
@@ -441,20 +468,21 @@ public:
     }
 
     friend HugeInt operator *(const long long& arg1, const HugeInt& arg2) {
-        return arg2 * (const HugeInt)arg1;
+        return arg2 * (HugeInt)arg1;
     }
 
     HugeInt operator /(const HugeInt& arg) const {
-        if (arg.Cont == 0 && this->Semn == 1 && arg.Semn == 1) {
+        if (arg.size == 0 && this->sign == 1 && arg.sign == 1) {
             return this->digitDivision(arg.V[0]);
         }
-        int nrCifre = (this->Cont + 1) - (arg.Cont + 1);
+        int nrCifre = (this->size + 1) - (arg.size + 1);
         if (nrCifre <= 0) {
             nrCifre = 1;
         }
 
         int i;
         HugeInt answer;
+        answer.alloc(nrCifre + 2);
         HugeInt tmp;
         HugeInt thisAbs = this->abs();
         HugeInt argAbs = arg.abs();
@@ -475,11 +503,11 @@ public:
             answer.V[i] = start;
             thisAbs -= (start * argAbs).baseMultiplication(i);
         }
-        for (answer.Cont = nrCifre; answer.Cont > 0 && answer.V[answer.Cont] == 0; --answer.Cont);
+        for (answer.size = nrCifre; answer.size > 0 && answer.V[answer.size] == 0; --answer.size);
 
-        answer.Semn = this->Semn * arg.Semn;
-        if (answer.Cont == 0 && answer.V[0] == 0) {
-            answer.Semn = 1;
+        answer.sign = this->sign * arg.sign;
+        if (answer.size == 0 && answer.V[0] == 0) {
+            answer.sign = 1;
         }
         return answer;
     }
@@ -489,7 +517,7 @@ public:
     }
 
     HugeInt operator %(const HugeInt& arg) const {
-        if (arg.Cont == 0 && this->Semn == 1 && arg.Semn == 1) {
+        if (arg.size == 0 && this->sign == 1 && arg.sign == 1) {
             return this->digitRemainder(arg.V[0]);
         }
         return *this - (*this / arg) * arg;
@@ -526,7 +554,7 @@ public:
 
     HugeInt abs() const {
         HugeInt answer = *this;
-        answer.Semn = 1;
+        answer.sign = 1;
         return answer;
     }
 
@@ -546,15 +574,17 @@ public:
 
     HugeInt root(const unsigned int& deg) const {
         HugeInt start, stop;
-        int nrCifre = ((this->Cont + 1) - 1) / deg + 1;
-        start.Cont = nrCifre - 1;
-        stop.Cont = nrCifre - 1;
+        int nrCifre = ((this->size + 1) - 1) / deg + 1;
+        start.alloc(nrCifre + 2);
+        stop.alloc(nrCifre + 2);
+        start.size = nrCifre - 1;
+        stop.size = nrCifre - 1;
         int i;
         for (i = 0; i < nrCifre; ++i) {
             start.V[i] = 0;
             stop.V[i] = BASE - 1;
         }
-        start.V[start.Cont] = 1;
+        start.V[start.size] = 1;
 
         HugeInt med;
         while (start < stop) {
@@ -566,14 +596,14 @@ public:
             }
         }
 
-        start.Semn = this->Semn;
+        start.sign = this->sign;
         return start;
     }
 
     unsigned long long getllu() const {
         unsigned long long answer = 0;
         int i;
-        for (i = this->Cont; i >= 0; --i) {
+        for (i = this->size; i >= 0; --i) {
             answer *= BASE;
             answer += this->V[i];
         }
@@ -583,11 +613,11 @@ public:
     long long getlld() const {
         long long answer = 0;
         int i;
-        for (i = this->Cont; i >= 0; --i) {
+        for (i = this->size; i >= 0; --i) {
             answer *= BASE;
             answer += this->V[i];
         }
-        if (this->Semn == -1) {
+        if (this->sign == -1) {
             answer = -answer;
         }
         return answer;
@@ -603,9 +633,9 @@ public:
 
     void afisare(FILE* output) const {
         int i;
-        if (this->Semn == -1) fprintf(output, "-");
-        fprintf(output, "%d", this->V[this->Cont]);
-        for(i = this->Cont - 1; i >= 0; --i) {
+        if (this->sign == -1) fprintf(output, "-");
+        fprintf(output, "%d", this->V[this->size]);
+        for(i = this->size - 1; i >= 0; --i) {
             fprintf(output, PRINT_FORMAT, this->V[i]);
         }
     }
@@ -615,6 +645,8 @@ public:
     }
 
     void citire(FILE *input) {
+        int allocated = 4;
+        this->alloc(allocated + 2);
         int Nr0;
         char Nr[1000];
         int stop;
@@ -624,12 +656,12 @@ public:
         Nr0 = strlen(Nr);
         if (Nr[0] == '-') {
             stop = 1;
-            this->Semn = -1;
+            this->sign = -1;
         } else {
             stop = 0;
-            this->Semn = 1;
+            this->sign = 1;
         }
-        this->V[this->Cont = 0] = 0;
+        this->V[this->size = 0] = 0;
         for(i = Nr0 - 1; i >= stop; ) {
             tmp = 0;
             tmpc = 0;
@@ -640,37 +672,44 @@ public:
                 ++tmpc;
             }
             for(j = 1; j <= tmpc; ++j) {
-                this->V[this->Cont] *= 10;
-                this->V[this->Cont] += tmp % 10;
+                this->V[this->size] *= 10;
+                this->V[this->size] += tmp % 10;
                 tmp /= 10;
             }
-            this->V[++this->Cont] = 0;
+            this->V[++this->size] = 0;
+            if (this->size == allocated) {
+                allocated *= 2;
+                this->realloc(allocated / 2 + 2, allocated + 2);
+            }
         }
-        if (this->V[this->Cont] == 0) {
-            --this->Cont;
+        if (this->V[this->size] == 0) {
+            --this->size;
         }
-        if (this->Cont == 0 && this->V[0] == 0 && this->Semn == -1) this->Semn = 0;
+        if (this->size == 0 && this->V[0] == 0 && this->sign == -1) this->sign = 0;
     }
 
     void citire() {
         citire(stdin);
     }
+
+    ~HugeInt() {
+        if (this->V != NULL) {
+            delete this->V;
+        }
+    }
 };
 
-template<int size>
-const int HugeInt<size>::BASE = 1000000000;
-template<int size>
-const int HugeInt<size>::SCAN_POWER = 9;
-template<int size>
-const char* HugeInt<size>::PRINT_FORMAT = "%.9d";
+const int HugeInt::BASE = 1000000000;
+const int HugeInt::SCAN_POWER = 9;
+const char* HugeInt::PRINT_FORMAT = "%.9d";
 
 
 
-HugeInt<> fct(const HugeInt<> nr) {
+HugeInt fct(const HugeInt nr) {
     int C;
     int k;
-    HugeInt<> tmp;
-    HugeInt<> F;
+    HugeInt tmp;
+    HugeInt F;
     for (tmp = nr, C = 0; tmp > 0; tmp /= 10, ++C);
     for (tmp = 1, k = 0; k < C - 1; tmp *= 10, ++k);
     F = (nr - tmp + 1) * C + tmp * (C - 1);
@@ -681,12 +720,12 @@ HugeInt<> fct(const HugeInt<> nr) {
 }
 
 #include <ctime>
-#include <cassert>
+#include <assert.h>
 
 // Program scris special pentru depanarea functiilor.
 int main(void) {
     long long lA, lB = -456, lC = 123, lD;
-    HugeInt<> hA, hB = -456, hC = 123, hD;
+    HugeInt hA, hB = -456, hC = 123, hD;
     lA = -7891234567890LL;
     hA = -7891234567890LL;
     lD = 9432932474329LL;
@@ -799,6 +838,7 @@ int main(void) {
             assert(hC == lC);
         }
     }
+    //*
     for (lA = -100, hA = -100; lA <= 100; ++lA, ++hA) {
         assert(hA == lA);
         assert(hA <= 100);
@@ -839,12 +879,12 @@ int main(void) {
                 assert(lC / hB == lC / lB);
             }
         }
-    }
+    }//*/
     printf("Division:\n");
     fflush(stdout);
 
 
-    HugeInt<4000> hhA, hhB, hhC, hhD;
+    HugeInt hhA, hhB, hhC, hhD;
     hhA = 10;
     hhB = hhA.pow(30000);
     hhA = 10;
