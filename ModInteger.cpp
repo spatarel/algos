@@ -72,7 +72,7 @@ public:
         return *this;
     }
 
-    ModInteger pow(unsigned int exp) const {
+    ModInteger pow(unsigned long long exp) const {
         unsigned long long answer = 1;
         unsigned long long power = this->value;
         for(; exp > 0; exp >>= 1) {

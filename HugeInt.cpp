@@ -488,7 +488,7 @@ public:
         return (const HugeInt)arg1 / arg2;
     }
 
-    HugeInt operator %(const HugeInt& arg) {
+    HugeInt operator %(const HugeInt& arg) const {
         if (arg.Cont == 0 && this->Semn == 1 && arg.Semn == 1) {
             return this->digitRemainder(arg.V[0]);
         }
