@@ -5,50 +5,53 @@ const char FIRST_CHAR = 'a';
 
 class Trie {
 private:
-    class Node {
+    class TrieNode {
+    public:
         bool isWord;
-        Node* sons[SIGMA];
+        TrieNode* descendents[SIGMA];
 
-        Node() {
+        TrieNode() {
             int i;
             this->isWord = false;
             for (i = 0; i < SIGMA; ++i) {
-                this->sons[i] = NULL;
+                this->descendents[i] = NULL;
             }
         }
 
-        ~Node() {
+        ~TrieNode() {
             int i;
             for (i = 0; i < SIGMA; ++i) {
-                if (this->sons[i] != NULL) {
-                    delete this->sons[i];
+                if (this->descendents[i] != NULL) {
+                    delete this->descendents[i];
                 }
             }
         }
+
     };
-    Node* root;
+
+    TrieNode* root;
 
 public:
     Trie() {
-        this->root = new Node();
+        this->root = new TrieNode();
     }
 
-    void add(char* S) {
+    void add(char* word) {
         int i;
-        Node* pos;
-        for (i = 0, pos = this->root; S[i] != 0; pos = pos->sons[S[i] - FIRST_CHAR], ++i) {
-            if (pos->sons[S[i] - FIRST_CHAR] == NULL) {
-                pos->sons[S[i] - FIRST_CHAR] = new Node();
+        TrieNode* pos;
+        for (i = 0, pos = this->root; word[i] != 0; pos = pos->descendents[word[i] - FIRST_CHAR], ++i) {
+            if (pos->descendents[word[i] - FIRST_CHAR] == NULL) {
+                pos->descendents[word[i] - FIRST_CHAR] = new TrieNode();
             }
         }
         pos->isWord = true;
     }
 
-    bool exists(char* S) {
+    bool exists(char* word) {
         int i;
-        Node* pos;
-        for (i = 0, pos = this->root; S[i] != 0; pos = pos->sons[S[i] - FIRST_CHAR], ++i) {
-            if (pos->sons[S[i] - FIRST_CHAR] == NULL) {
+        TrieNode* pos;
+        for (i = 0, pos = this->root; word[i] != 0; pos = pos->descendents[word[i] - FIRST_CHAR], ++i) {
+            if (pos->descendents[word[i] - FIRST_CHAR] == NULL) {
                 return false;
             }
         }
@@ -59,3 +62,4 @@ public:
         delete this->root;
     }
 };
+
