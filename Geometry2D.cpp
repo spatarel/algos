@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cmath>
 #include <string>
+#include <vector>
 #include <algorithm>
 
 using namespace std;
@@ -30,7 +31,7 @@ public:
 
 const double Math::PI = 3.14159265358979323846264338327950288419716939937510;
 
-const double Math::Epsilon = 0.000001;
+const double Math::Epsilon = 1e-6;
 
 class Vector2DI {
 private:
@@ -135,7 +136,7 @@ public:
         this->Y = Y;
     }
 
-    bool equalsTo(const Point2DI &arg) const {
+    bool operator ==(const Point2DI &arg) const {
         return this->X == arg.getX() && this->Y == arg.getY();
     }
 
@@ -207,7 +208,7 @@ public:
         this->Y = (double)arg.getY();
     }
 
-    bool equalsTo(const Point2DD &arg) const {
+    bool operator ==(const Point2DD &arg) const {
         return Math::abs(this->getX() - arg.getX()) < Math::Epsilon &&
                 Math::abs(this->getY() - arg.getY()) < Math::Epsilon;
     }
@@ -499,7 +500,7 @@ public:
     }
 
     Point2DD getMiddle() {
-    	return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
+        return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
     }
 
     Point2DD intersectWith(const Segment2DI &B) const {
@@ -509,7 +510,7 @@ public:
         ba = Point2DD(B.A);
         bb = Point2DD(B.B);
         try {
-        	sol = this->L.intersectWith(B.L);
+            sol = this->L.intersectWith(B.L);
             if (Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon ||
                     Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
@@ -525,7 +526,7 @@ public:
                 (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
                 (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
                 (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
-            	throw "Segments don't intersect.";
+                throw "Segments don't intersect.";
             }
             if ((Math::abs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon) ||
                 (Math::abs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
@@ -536,7 +537,7 @@ public:
                 sol = ab;
             }
         } catch (int &i) {
-        	throw "Segments don't intersect.";
+            throw "Segments don't intersect.";
         }
         return sol;
     }
@@ -576,7 +577,7 @@ public:
     }
 
     Point2DD getMiddle() {
-    	return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
+        return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
     }
 
     Point2DD intersectWith(const Segment2DD &B) const {
@@ -586,7 +587,7 @@ public:
         ba = B.A;
         bb = B.B;
         try {
-        	sol = this->L.intersectWith(B.L);
+            sol = this->L.intersectWith(B.L);
             if (Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon ||
                     Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
@@ -602,7 +603,7 @@ public:
                 (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
                 (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
                 (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
-            	throw "Segments don't intersect";
+                throw "Segments don't intersect";
             }
             if ((Math::abs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon) ||
                 (Math::abs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
@@ -613,7 +614,7 @@ public:
                 sol = ab;
             }
         } catch (int &s) {
-        	throw "Segments don't intersect";
+            throw "Segments don't intersect";
         }
         return sol;
     }
@@ -632,52 +633,126 @@ public:
     }
 };
 
-class TriangleD {
+class Triangle2DD {
 private:
-	Point2DD A;
-	Point2DD B;
-	Point2DD C;
+    Point2DD A;
+    Point2DD B;
+    Point2DD C;
 
 public:
-	TriangleD(const Point2DD &A, const Point2DD &B, const Point2DD &C) {
-		this->A = A;
-		this->B = B;
-		this->C = C;
-	}
+    Triangle2DD(const Point2DD &A, const Point2DD &B, const Point2DD &C) {
+        this->A = A;
+        this->B = B;
+        this->C = C;
+    }
 
-	void setA(const Point2DD &A) {
-		this->A = A;
-	}
+    void setA(const Point2DD &A) {
+        this->A = A;
+    }
 
-	Point2DD getA() const {
-		return this->A;
-	}
+    Point2DD getA() const {
+        return this->A;
+    }
 
-	void setB(const Point2DD &B) {
-		this->B = B;
-	}
+    void setB(const Point2DD &B) {
+        this->B = B;
+    }
 
-	Point2DD getB() const {
-		return this->B;
-	}
+    Point2DD getB() const {
+        return this->B;
+    }
 
-	void setC(const Point2DD &C) {
-		this->C = C;
-	}
+    void setC(const Point2DD &C) {
+        this->C = C;
+    }
 
-	Point2DD getC() const {
-		return this->C;
-	}
+    Point2DD getC() const {
+        return this->C;
+    }
 
-	double getArea() {
-		return this->A.getTriangleSurface(this->B, this->C);
-	}
+    double getArea() {
+        return Math::abs(this->A.getTriangleSurface(this->B, this->C));
+    }
 
-	Point2DD getCircumscribedCircleCenter() {
-		Segment2DD AB = Segment2DD(A, B);
-		Segment2DD BC = Segment2DD(B, C);
-		Line2DD ABmed = AB.getLine().getPerpendicular(AB.getMiddle());
-		Line2DD BCmed = BC.getLine().getPerpendicular(BC.getMiddle());
-		return ABmed.intersectWith(BCmed);
-	}
+    Point2DD getCircumscribedCircleCenter() {
+        Segment2DD AB = Segment2DD(A, B);
+        Segment2DD BC = Segment2DD(B, C);
+        Line2DD ABmed = AB.getLine().getPerpendicular(AB.getMiddle());
+        Line2DD BCmed = BC.getLine().getPerpendicular(BC.getMiddle());
+        return ABmed.intersectWith(BCmed);
+    }
+};
+
+bool compPoint2DD(const Point2DD &arg1, const Point2DD &arg2) {
+    return (arg1.getX() < arg2.getX()) ||
+            (arg1.getX() == arg2.getX() && arg1.getY() < arg2.getY());
+}
+
+class Polynom2DD {
+private:
+    vector<Point2DD> V;
+
+public:
+    Polynom2DD(const vector<Point2DD> &V) {
+        this->V = V;
+    }
+
+    Polynom2DD(const Point2DD *begin, const Point2DD *end) {
+        //assert(begin <= end);
+        for (; begin != end; ++begin) {
+            this->V.push_back(*begin);
+        }
+    }
+
+    double getArea() {
+        double answer = 0;
+        int i;
+        for (i = 1; i + 1 < (int)this->V.size(); ++i) {
+            answer += this->V[0].getTriangleSurface(this->V[i], this->V[i + 1]);
+        }
+        return Math::abs(answer);
+    }
+
+    Polynom2DD getConvexHull() {
+        int i;
+        vector<Point2DD> sortedV = this->V;
+        vector<Point2DD> list1;
+        vector<Point2DD> list2;
+        vector<Point2DD> answer;
+        sort(sortedV.begin(), sortedV.end(), compPoint2DD);
+        vector<Point2DD>::iterator it = unique(sortedV.begin(), sortedV.end());
+        sortedV.resize( distance(sortedV.begin(), it) );
+        if (sortedV.size() <= 2) {
+            answer = sortedV;
+        } else {
+            list1.push_back(sortedV[0]);
+            list1.push_back(sortedV[1]);
+            for (i = 2; i < (int)sortedV.size(); ++i) {
+                list1.push_back(sortedV[i]);
+                int size = (int)list1.size();
+                if (size >= 3 && list1[size - 1].getPointSign(list1[size - 2], list1[size - 3]) >= -Math::Epsilon) {
+                    list1.pop_back();
+                    list1.pop_back();
+                    --i;
+                }
+            }
+            int size = (int)sortedV.size();
+            list2.push_back(sortedV[size - 1]);
+            list2.push_back(sortedV[size - 2]);
+            for (i = size - 3; i >= 0; --i) {
+                list2.push_back(sortedV[i]);
+                int size = (int)list2.size();
+                if (size >= 3 && list2[size - 1].getPointSign(list2[size - 2], list2[size - 3]) >= -Math::Epsilon) {
+                    list2.pop_back();
+                    list2.pop_back();
+                    ++i;
+                }
+            }
+            answer = list1;
+            for (i = 1; i < (int)list2.size() - 1; ++i) {
+                answer.push_back(list2[i]);
+            }
+        }
+        return Polynom2DD(answer);
+    }
 };
