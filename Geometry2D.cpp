@@ -482,6 +482,12 @@ public:
     Point2DD getSymetricOf(const Point2DD &arg) const {
         return this->getProjection(arg).getSymetricOf(arg);
     }
+
+    Point2DD getPointAtDistance(const Point2DD &arg, const double distance) const {
+        return Point2DD(
+                arg.getX() + this->getB() * distance,
+                arg.getY() - this->getA() * distance);
+    }
 };
 
 class Segment2DI {

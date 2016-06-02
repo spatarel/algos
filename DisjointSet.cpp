@@ -1,3 +1,5 @@
+#include <cstring>
+
 class DisjointSet {
 private:
     int N;
@@ -31,6 +33,18 @@ public:
         this->CompNo = size;
     }
 
+    DisjointSet& operator =(const DisjointSet &arg) {
+        delete this->CompCnx;
+        delete this->CompCard;
+        this->N = arg.N;
+        this->CompCnx = new int[arg.N];
+        this->CompCard = new int[arg.N];
+        memcpy(this->CompCnx, arg.CompCnx, sizeof(int) * arg.N);
+        memcpy(this->CompCard, arg.CompCard, sizeof(int) * arg.N);
+        this->CompNo = arg.CompNo;
+        return *this;
+    }
+
     bool join(int A, int B) {
         int compA = getCompCnx(A);
         int compB = getCompCnx(B);
@@ -58,4 +72,3 @@ public:
         delete this->CompCard;
     }
 };
-
