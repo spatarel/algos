@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <algorithm>
 
 template<int SIZE>
 class WriteStream {
@@ -9,7 +10,7 @@ private:
     char buffer[SIZE + 15];
 
 public:
-    WriteStream(FILE* stream) {
+    WriteStream(FILE* stream = stdout) {
         this->stream = stream;
         this->pos = 0;
     }
