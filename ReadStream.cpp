@@ -88,6 +88,25 @@ public:
     return answer;
   }
 
+  double nextDouble() {
+    double answer = nextUnsignedInt();
+    if (this->currentChar() == '.') {
+      advance();
+      int decimals = 0;
+      while (isDigit[(int)this->currentChar()]) {
+        answer *= 10;
+        answer += this->currentChar() - '0';
+        advance();
+        decimals++;
+      }
+      while (decimals > 0) {
+        answer /= 10;
+        decimals--;
+      }
+    }
+    return answer;
+  }
+
   int nextString(char* answer) {
     while (isWhiteSpace[(int)this->currentChar()])
       this->advance();
