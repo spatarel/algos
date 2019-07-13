@@ -470,6 +470,12 @@ public:
                 }
             }
         }
+        while (answer.size > 0 && answer.V[answer.size] == 0) {
+          answer.size--;
+        }
+        if (answer.size == 0 && answer.V[0] == 0) {
+          answer.sign = 1;
+        }
         return answer;
     }
 
