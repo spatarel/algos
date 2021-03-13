@@ -169,7 +169,7 @@ private:
 
     void alloc(int size) {
         if (this->V != NULL) {
-            delete this->V;
+            delete[] this->V;
         }
         this->V = new int[size];
     }
@@ -184,7 +184,7 @@ private:
             for (i = 0; i < oldSize; ++i) {
                 this->V[i] = oldV[i];
             }
-            delete oldV;
+            delete[] oldV;
         }
     }
 
@@ -228,10 +228,12 @@ public:
     }
 
     HugeInt& operator =(const HugeInt& arg) {
-        this->alloc(arg.size + 1);
-        this->size = arg.size;
-        this->sign = arg.sign;
-        memcpy(this->V, arg.V, sizeof(int) * (this->size + 1));
+        if (this != &arg) {
+            this->alloc(arg.size + 1);
+            this->size = arg.size;
+            this->sign = arg.sign;
+            memcpy(this->V, arg.V, sizeof(int) * (this->size + 1));
+        }
         return *this;
     }
 
@@ -252,7 +254,7 @@ public:
                 else return 1;
             } else {
                 int i;
-                for (i = arg1.size; arg1.V[i] == arg2.V[i] && i >= 0; --i);
+                for (i = arg1.size; i >= 0 && arg1.V[i] == arg2.V[i]; --i);
                 if (i >= 0) {
                     if (arg1.V[i] > arg2.V[i]) {
                         if (arg1.sign == 1) return 1;
@@ -714,7 +716,7 @@ public:
 
     ~HugeInt() {
         if (this->V != NULL) {
-            delete this->V;
+            delete[] this->V;
         }
     }
 };
