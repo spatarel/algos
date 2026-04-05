@@ -114,6 +114,10 @@ public:
                 this->denominator * arg.denominator);
     }
 
+    friend Rational operator + (const T& arg1, const Rational& arg2) {
+        return Rational(arg1) + arg2;
+    }
+
     Rational operator - () const {
         return Rational(
                 -this->numerator,
@@ -126,16 +130,28 @@ public:
                 this->denominator * arg.denominator);
     }
 
+    friend Rational operator - (const T& arg1, const Rational& arg2) {
+        return Rational(arg1) - arg2;
+    }
+
     Rational operator * (const Rational& arg) const {
         return Rational(
                 this->numerator * arg.numerator,
                 this->denominator * arg.denominator);
     }
 
+    friend Rational operator * (const T& arg1, const Rational& arg2) {
+        return Rational(arg1) * arg2;
+    }
+
     Rational operator / (const Rational& arg) const {
         return Rational(
                 this->numerator * arg.denominator,
                 this->denominator * arg.numerator);
+    }
+
+    friend Rational operator / (const T& arg1, const Rational& arg2) {
+        return Rational(arg1) / arg2;
     }
 
     Rational& operator += (const Rational& arg) {
@@ -163,7 +179,6 @@ public:
     }
 
     friend ostream& operator << (ostream& stream, const Rational& arg) {
-        stream << arg.numerator << '/' << arg.denominator;
-        return stream;
+        return stream << arg.numerator << '/' << arg.denominator;
     }
 };

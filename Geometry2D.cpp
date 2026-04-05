@@ -586,6 +586,38 @@ public:
         return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
     }
 
+    bool isIntersectingWith(const Segment2DD &B) const {
+        Point2DD aa, ab, ba, bb, sol;
+        aa = this->A;
+        ab = this->B;
+        ba = B.A;
+        bb = B.B;
+        if (this->L.isParallelWith(B.L)) {
+            if (this->L.isTheSameAs(B.L)) {
+                double DA = aa.distanceTo(ab);
+                double DB = ba.distanceTo(bb);
+                double DAA = aa.distanceTo(ba);
+                double DAB = aa.distanceTo(bb);
+                double DBA = ab.distanceTo(ba);
+                double DBB = ab.distanceTo(bb);
+                if ((Math::abs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon) ||
+                    (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
+                    (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
+                    (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            sol = this->L.intersectWith(B.L);
+            return Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) < Math::Epsilon
+                && Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) < Math::Epsilon;
+        }
+    }
+
     Point2DD intersectWith(const Segment2DD &B) const {
         Point2DD aa, ab, ba, bb, sol;
         aa = this->A;

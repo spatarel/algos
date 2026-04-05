@@ -43,6 +43,61 @@ const double Math::PI = 3.14159265358979323846264338327950288419716939937510;
 
 const double Math::Epsilon = 0.000001;
 
+class Vector3DD {
+private:
+    double X;
+    double Y;
+    double Z;
+public:
+    Vector3DD() {
+        this->X = 0;
+        this->Y = 0;
+        this->Z = 0;
+    }
+
+    Vector3DD(const double &X, const double &Y, const double &Z) {
+        this->X = X;
+        this->Y = Y;
+        this->Z = Z;
+    }
+
+    void setX(const double &X) {
+        this->X = X;
+    }
+
+    double getX() const {
+        return this->X;
+    }
+
+    void setY(const double &Y) {
+        this->Y = Y;
+    }
+
+    double getY() const {
+        return this->Y;
+    }
+
+    void setZ(const double &Z) {
+        this->Z = Z;
+    }
+
+    double getZ() const {
+        return this->Z;
+    }
+
+    double getNorm() const {
+        return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
+    }
+
+    double dotProductWith(const Vector3DD &arg) const {
+        return this->X * arg.getX() + this->Y * arg.getY() + this->Z * arg.getZ();
+    }
+
+    double angleWith(const Vector3DD &arg) const {
+        return acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+    }
+};
+
 class Point3DI {
 private:
     long long X;
@@ -55,13 +110,13 @@ public:
         this->Z = 0;
     }
 
-    Point3DI(const long long X, const long long Y, const long long Z) {
+    Point3DI(const long long &X, const long long &Y, const long long &Z) {
         this->X = X;
         this->Y = Y;
         this->Z = Z;
     }
 
-    void setX(long long X) {
+    void setX(const long long &X) {
         this->X = X;
     }
 
@@ -69,7 +124,7 @@ public:
         return this->X;
     }
 
-    void setY(long long Y) {
+    void setY(const long long &Y) {
         this->Y = Y;
     }
 
@@ -77,7 +132,7 @@ public:
         return this->Y;
     }
 
-    void setZ(long long Y) {
+    void setZ(const long long &Y) {
         this->Z = Z;
     }
 
@@ -85,11 +140,10 @@ public:
         return this->Z;
     }
 
-    double distanceTo(const Point3DI *arg) const {
-        return sqrt((double)
-                (this->X - arg->X) * (this->X - arg->X) +
-                (this->Y - arg->Y) * (this->Y - arg->Y) +
-                (this->Z - arg->Z) * (this->Z - arg->Z));
+    double distanceTo(const Point3DI& arg) const {
+        return sqrt((this->X - arg.X) * (this->X - arg.X) +
+                    (this->Y - arg.Y) * (this->Y - arg.Y) +
+                    (this->Z - arg.Z) * (this->Z - arg.Z));
     }
 };
 
@@ -106,18 +160,18 @@ public:
     }
 
     Point3DD(const Point3DI &arg) {
-        this->X = (double)arg.getX();
-        this->Y = (double)arg.getY();
-        this->Z = (double)arg.getZ();
+        this->X = arg.getX();
+        this->Y = arg.getY();
+        this->Z = arg.getZ();
     }
 
-    Point3DD(const double X, const double Y, const double Z) {
+    Point3DD(const double &X, const double &Y, const double &Z) {
         this->X = X;
         this->Y = Y;
         this->Z = Z;
     }
 
-    void setX(double X) {
+    void setX(const double &X) {
         this->X = X;
     }
 
@@ -125,7 +179,7 @@ public:
         return this->X;
     }
 
-    void setY(double Y) {
+    void setY(const double &Y) {
         this->Y = Y;
     }
 
@@ -133,7 +187,7 @@ public:
         return this->Y;
     }
 
-    void setZ(double Y) {
+    void setZ(const double &Z) {
         this->Z = Z;
     }
 
@@ -141,18 +195,16 @@ public:
         return this->Z;
     }
 
-    double distanceTo(const Point3DD *arg) const {
-        return sqrt((double)
-                (this->X - arg->X) * (this->X - arg->X) +
-                (this->Y - arg->Y) * (this->Y - arg->Y) +
-                (this->Z - arg->Z) * (this->Z - arg->Z));
+    double distanceTo(const Point3DD& arg) const {
+        return sqrt((this->X - arg.X) * (this->X - arg.X) +
+                    (this->Y - arg.Y) * (this->Y - arg.Y) +
+                    (this->Z - arg.Z) * (this->Z - arg.Z));
     }
 
-    double distanceTo(const Point3DI *arg) const {
-        return sqrt((double)
-                (this->X - arg->getX()) * (this->X - arg->getX()) +
-                (this->Y - arg->getY()) * (this->Y - arg->getY()) +
-                (this->Z - arg->getZ()) * (this->Z - arg->getZ()));
+    double distanceTo(const Point3DI& arg) const {
+        return sqrt((this->X - arg.getX()) * (this->X - arg.getX()) +
+                    (this->Y - arg.getY()) * (this->Y - arg.getY()) +
+                    (this->Z - arg.getZ()) * (this->Z - arg.getZ()));
     }
 };
 
@@ -165,14 +217,39 @@ private:
     double norm;
 
     double computeNorm() {
-        return sqrt((double)this->A * this->A + this->B * this->B + this->C * this->C);
+        return sqrt(this->A * this->A
+                  + this->B * this->B
+                  + this->C * this->C);
     }
 public:
-    Plane3DI(const Point3DI *A, const Point3DI *B, const Point3DI *C) {
-        this->A = A->getY() * B->getZ() - A->getZ() * B->getY() - A->getY() * C->getZ() + B->getY() * C->getZ() + A->getZ() * C->getY() - B->getZ() * C->getY();
-        this->B = A->getX() * B->getZ() + A->getZ() * B->getX() + A->getX() * C->getZ() - B->getX() * C->getZ() - A->getZ() * C->getX() + B->getZ() * C->getX();
-        this->C = A->getX() * B->getY() - A->getY() * B->getX() - A->getX() * C->getY() + B->getX() * C->getY() + A->getY() * C->getX() - B->getY() * C->getX();
-        this->D =-A->getX() * B->getY() * C->getZ() + A->getY() * B->getX() * C->getZ() + A->getX() * B->getZ() * C->getY() - A->getZ() * B->getX() * C->getY() - A->getY() * B->getZ() * C->getX() + A->getZ() * B->getY() * C->getX();
+    Plane3DI(const Point3DI& A, const Point3DI& B, const Point3DI& C) {
+        this->A = + B.getY() * C.getZ()
+                  - A.getY() * C.getZ()
+                  - B.getZ() * C.getY()
+                  + A.getZ() * C.getY()
+                  + A.getY() * B.getZ()
+                  - A.getZ() * B.getY();
+
+        this->B = + A.getX() * C.getZ()
+                  - B.getX() * C.getZ()
+                  - A.getX() * B.getZ()
+                  + A.getZ() * B.getX()
+                  + B.getZ() * C.getX()
+                  - A.getZ() * C.getX();
+
+        this->C = + A.getX() * B.getY()
+                  - A.getY() * B.getX()
+                  - A.getX() * C.getY()
+                  + B.getX() * C.getY()
+                  + A.getY() * C.getX()
+                  - B.getY() * C.getX();
+
+        this->D = - A.getX() * B.getY() * C.getZ()
+                  + A.getY() * B.getX() * C.getZ()
+                  + A.getX() * B.getZ() * C.getY()
+                  - A.getZ() * B.getX() * C.getY()
+                  - A.getY() * B.getZ() * C.getX()
+                  + A.getZ() * B.getY() * C.getX();
         this->norm = this->computeNorm();
     }
 
@@ -192,23 +269,23 @@ public:
         return this->D;
     }
 
-    double distanceTo(const Point3DI *arg) const {
-        return Math::abs(this->A * arg->getX() + this->B * arg->getY() + this->C * arg->getZ() + this->D) / this->norm;
+    double distanceTo(const Point3DI& arg) const {
+        return Math::abs(this->A * arg.getX() + this->B * arg.getY() + this->C * arg.getZ() + this->D) / this->norm;
     }
 
-    long long getPointSign(const Point3DI *arg) const {
-        return this->A * arg->getX() + this->B * arg->getY() + this->C * arg->getZ() + this->D;
+    long long getPointSign(const Point3DI& arg) const {
+        return this->A * arg.getX() + this->B * arg.getY() + this->C * arg.getZ() + this->D;
     }
 
-    double getPointSign(const Point3DD *arg) const {
-        return this->A * arg->getX() + this->B * arg->getY() + this->C * arg->getZ() + this->D;
+    double getPointSign(const Point3DD& arg) const {
+        return this->A * arg.getX() + this->B * arg.getY() + this->C * arg.getZ() + this->D;
     }
 
-    bool contains(const Point3DI *arg) const {
+    bool contains(const Point3DI& arg) const {
         return this->getPointSign(arg) == 0;
     }
 
-    bool contains(const Point3DD *arg) const {
+    bool contains(const Point3DD& arg) const {
         return this->getPointSign(arg) < Math::Epsilon;
     }
 };

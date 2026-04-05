@@ -15,9 +15,14 @@ public:
     }
 
     Polynom(const T& arg) {
-        this->degree = 0;
-        this->coefficients = new T[1];
-        this->coefficients[0] = arg;
+        if (arg == 0) {
+            this->degree = -1;
+            this->coefficients = NULL;
+        } else {
+            this->degree = 0;
+            this->coefficients = new T[1];
+            this->coefficients[0] = arg;
+        }
     }
 
     Polynom(const Polynom& arg) {
@@ -57,6 +62,23 @@ public:
 
     T& operator [](unsigned int arg) const {
         return this->coefficients[arg];
+    }
+
+    bool operator ==(const Polynom& arg) const {
+        int i;
+        if (this->degree != arg.degree) {
+            return false;
+        }
+        for (i = 0; i <= arg.degree; ++i) {
+            if (this->coefficients[i] != arg.coefficients[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool operator !=(const Polynom& arg) const {
+        return !(*this == arg);
     }
 
     Polynom operator <<(unsigned int arg) const {
@@ -187,6 +209,53 @@ public:
         return *this = *this * arg;
     }
 
+    std::pair<Polynom, Polynom> divide(const Polynom& arg) const {
+        int i, j;
+        Polynom answer;
+        if (arg.degree == -1) {
+            assert(false);
+        } else if (this->degree < arg.degree) {
+            answer.degree = -1;
+        } else {
+            answer.degree = this->degree - arg.degree;
+        }
+        if (answer.degree >= 0) {
+            answer.coefficients = new T[answer.degree + 1];
+        } else {
+            answer.coefficients = NULL;
+        }
+        Polynom R = *this;
+        for (i = answer.degree; i >= 0; --i) {
+            answer.coefficients[i] = R.coefficients[i + arg.degree]
+                / arg.coefficients[arg.degree];
+            // R -= (Polynom(answer.coefficients[i]) * arg) << i;
+            for (j = arg.degree; j >= 0; --j) {
+                R[i + j] -= answer.coefficients[i] * arg[j];
+            }
+        }
+        while (R.degree >= 0 && R[R.degree] == 0) {
+            R.degree--;
+        }
+        // cout << *this << " % " << arg << " = " << R << '\n';
+        return std::make_pair(answer, R);
+    }
+
+    Polynom operator /(const Polynom& arg) const {
+        return this->divide(arg).first;
+    }
+
+    Polynom& operator /=(const Polynom& arg) {
+        return *this = *this / arg;
+    }
+
+    Polynom operator %(const Polynom& arg) const {
+        return this->divide(arg).second;
+    }
+
+    Polynom& operator %=(const Polynom& arg) {
+        return *this = *this % arg;
+    }
+
     T operator ()(const T& value) const {
         int i;
         T answer;
@@ -235,7 +304,7 @@ public:
 
     ~Polynom() {
         if (this->coefficients != NULL) {
-            delete this->coefficients;
+            delete[] this->coefficients;
         }
     }
 };

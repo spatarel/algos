@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
@@ -481,8 +482,8 @@ public:
         return answer;
     }
 
-    HugeInt operator *(const int& arg) const {
-        if (0 <= arg && arg < BASE) {
+    HugeInt operator *(const long long& arg) const {
+        if (0 < arg && arg < BASE) {
             return this->digitMultiplication(arg);
         } else {
             return this->operator *((HugeInt)arg);
@@ -532,6 +533,14 @@ public:
             answer.sign = 1;
         }
         return answer;
+    }
+
+    HugeInt operator /(const long long& arg) const {
+        if (0 < arg && arg < BASE) {
+            return this->digitDivision(arg);
+        } else {
+            return this->operator /((HugeInt)arg);
+        }
     }
 
     friend HugeInt operator /(const long long& arg1, const HugeInt& arg2) {
@@ -736,9 +745,15 @@ private:
 
     HugeInt value;
 public:
-    HugeDecimal(const int &value = 0) {
-        this->value = value;
-        this->value = this->value.baseMultiplication(DECIMALS);
+    HugeDecimal(double value = 0) {
+        this->value = floor(value);
+        for (int i = 0; i < DECIMALS; i++) {
+            this->value = this->value.baseMultiplication(1);
+            double x;
+            value = modf(value, &x);
+            value *= HugeDecimal::BASE;
+            this->value += floor(value);
+        }
     }
 
     HugeDecimal(const HugeInt &value) {
@@ -750,6 +765,10 @@ public:
         HugeDecimal answer;
         answer.value = this->value + arg.value;
         return answer;
+    }
+
+    friend HugeDecimal operator + (const HugeInt& arg1, const HugeDecimal& arg2) {
+        return (const HugeDecimal)arg1 + arg2;
     }
 
     HugeDecimal operator - () const {
@@ -764,16 +783,28 @@ public:
         return answer;
     }
 
+    friend HugeDecimal operator - (const HugeInt& arg1, const HugeDecimal& arg2) {
+        return (const HugeDecimal)arg1 - arg2;
+    }
+
     HugeDecimal operator * (const HugeDecimal& arg) const {
         HugeDecimal answer;
         answer.value = (this->value * arg.value).baseMultiplication(-DECIMALS);
         return answer;
     }
 
+    friend HugeDecimal operator * (const HugeInt& arg1, const HugeDecimal& arg2) {
+        return (const HugeDecimal)arg1 * arg2;
+    }
+
     HugeDecimal operator / (const HugeDecimal& arg) const {
         HugeDecimal answer;
         answer.value = (this->value.baseMultiplication(DECIMALS)) / arg.value;
         return answer;
+    }
+
+    friend HugeDecimal operator / (const HugeInt& arg1, const HugeDecimal& arg2) {
+        return (const HugeDecimal)arg1 / arg2;
     }
 
     HugeDecimal& operator += (const HugeDecimal& arg) {
@@ -786,7 +817,7 @@ public:
         return *this;
     }
 
-    HugeDecimal& operator *= (const int& arg) {
+    HugeDecimal& operator *= (const long long& arg) {
         this->value = this->value * arg;
         return *this;
     }
@@ -801,7 +832,7 @@ public:
         return *this;
     }
 
-    HugeDecimal& operator /= (const int& arg) {
+    HugeDecimal& operator /= (const long long& arg) {
         this->value = this->value / arg;
         return *this;
     }
@@ -859,10 +890,10 @@ public:
             }
         } else {
             fprintf(output, "0.");
-            for(i = DECIMALS - 1; i >= this->value.size; --i) {
-                fprintf(output, HugeDecimal::ZERO_PRINT_FORMAT, this->value.V[this->value.size]);
+            for(i = DECIMALS - 1; i > this->value.size; --i) {
+                fprintf(output, HugeDecimal::PRINT_FORMAT, 0);
             }
-            for(i = this->value.size - 1; i >= 0; --i) {
+            for(i = this->value.size; i >= 0; --i) {
                 fprintf(output, HugeDecimal::PRINT_FORMAT, this->value.V[i]);
             }
         }
@@ -871,14 +902,27 @@ public:
     void afisare() const {
         afisare(stdout);
     }
+
+    double getDouble() const {
+        double answer = 0;
+        for(int i = this->value.size; i >= 0; --i) {
+            answer *= HugeDecimal::BASE;
+            answer += this->value.V[i];
+        }
+        for(int i = DECIMALS; i > 0; --i) {
+            answer /= HugeDecimal::BASE;
+        }
+        if (this->value.sign == -1) {
+          answer *= -1;
+        }
+        return answer;
+    }
 };
 
 template<int DECIMALS>
 const int HugeDecimal<DECIMALS>::BASE = 1000000000;
 template<int DECIMALS>
 const int HugeDecimal<DECIMALS>::SCAN_POWER = 9;
-template<int DECIMALS>
-const char* HugeDecimal<DECIMALS>::ZERO_PRINT_FORMAT = "%.09d";
 template<int DECIMALS>
 const char* HugeDecimal<DECIMALS>::PRINT_FORMAT = "%.9d";
 
