@@ -215,15 +215,34 @@ public:
         }
     }
 
-    T determinant() const {
-        // assert(this->a == this->b)
-        int i;
-        Matrix<T> L(this->a, this->b), U(this->a, this->b);
-        this->LUDecompose(L, U);
-        T answer = U[0][0];
-        for (i = 1; i < this->a; ++i) {
-            answer *= U[i][i];
+    static int sgn(int* P, int* end) {
+        int N = end - P;
+        int answer = 1;
+        for (int i = 0; i < N; i++) {
+          for (int j = i + 1; j < N; j++) {
+            if (P[i] > P[j]) {
+              answer *= -1;
+            }
+          }
         }
+        return answer;
+    }
+
+    T determinant() const {
+        assert(this->a == this->b);
+        int *P = new int[this->a];
+        for (int i = 0; i < this->a; i++) {
+            P[i] = i;
+        }
+        T answer = 0;
+        do {
+            T prod = Matrix::sgn(P, P + this->a);
+            for (int i = 0; i < this->a; i++) {
+                prod *= this->M[i][P[i]];
+            }
+            answer += prod;
+        } while (std::next_permutation(P, P + this->a));
+        delete[] P;
         return answer;
     }
 };
