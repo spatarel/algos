@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cmath>
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
@@ -264,6 +264,22 @@ public:
         return Point2DD(2 * this->getX() - arg.getX(), 2 * this->getY() - arg.getY());
     }
 };
+
+Point2DD operator +(const Point2DD &a, const Point2DD &b) {
+  return Point2DD(a.getX() + b.getX(), a.getY() + b.getY());
+}
+
+Point2DD operator -(const Point2DD &a, const Point2DD &b) {
+  return Point2DD(a.getX() - b.getX(), a.getY() - b.getY());
+}
+
+Point2DD operator *(double a, const Point2DD &b) {
+  return Point2DD(a * b.getX(), a * b.getY());
+}
+
+Point2DD operator *(const Point2DD &a, double b) {
+  return Point2DD(a.getX() * b, a.getY() * b);
+}
 
 class Point2DP {
 private:
@@ -726,16 +742,16 @@ bool compPoint2DD(const Point2DD &arg1, const Point2DD &arg2) {
             (arg1.getX() == arg2.getX() && arg1.getY() < arg2.getY());
 }
 
-class Polynom2DD {
+class Polygon2DD {
 private:
     vector<Point2DD> V;
 
 public:
-    Polynom2DD(const vector<Point2DD> &V) {
+    Polygon2DD(const vector<Point2DD> &V) {
         this->V = V;
     }
 
-    Polynom2DD(const Point2DD *begin, const Point2DD *end) {
+    Polygon2DD(const Point2DD *begin, const Point2DD *end) {
         //assert(begin <= end);
         for (; begin != end; ++begin) {
             this->V.push_back(*begin);
@@ -751,7 +767,7 @@ public:
         return Math::abs(answer);
     }
 
-    Polynom2DD getConvexHull() {
+    Polygon2DD getConvexHull() {
         int i;
         vector<Point2DD> sortedV = this->V;
         vector<Point2DD> list1;
@@ -791,6 +807,6 @@ public:
                 answer.push_back(list2[i]);
             }
         }
-        return Polynom2DD(answer);
+        return Polygon2DD(answer);
     }
 };

@@ -288,5 +288,8 @@ public:
     bool contains(const Point3DD& arg) const {
         return this->getPointSign(arg) < Math::Epsilon;
     }
-};
 
+    Vector3DD getNormal() const {
+      return Vector3DD(this->getA(), this->getB(), this->getC());
+    }
+};
