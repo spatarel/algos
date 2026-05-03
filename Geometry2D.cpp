@@ -281,6 +281,26 @@ Point2DD operator *(const Point2DD &a, double b) {
   return Point2DD(a.getX() * b, a.getY() * b);
 }
 
+Point2DD operator /(const Point2DD &a, double b) {
+  return Point2DD(a.getX() / b, a.getY() / b);
+}
+
+Point2DD operator +=(Point2DD &a, const Point2DD &b) {
+  return a = a + b;
+}
+
+Point2DD operator -=(Point2DD &a, const Point2DD &b) {
+  return a = a - b;
+}
+
+Point2DD operator *=(Point2DD &a, double b) {
+  return a = a * b;
+}
+
+Point2DD operator /=(Point2DD &a, double b) {
+  return a = a / b;
+}
+
 class Point2DP {
 private:
     double distance;
