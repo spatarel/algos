@@ -383,7 +383,7 @@ public:
         return this->C;
     }
 
-    double distanceTo(const Point2DI &arg) const {
+    double distanceTo(const Point2DD &arg) const {
         return Math::abs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC()) / this->norm;
     }
 
@@ -429,6 +429,11 @@ public:
                 -(this->getB() * arg.getX() - this->getA() * arg.getY()));
     }
 
+    Line2DI getParallel(const Point2DI &arg) const {
+        return Line2DI(this->getA(), this->getB(),
+            -(this->getA() * arg.getX() + this->getB() * arg.getY()));
+    }
+
     Point2DD getProjection(const Point2DI &arg) const {
         return this->intersectWith(this->getPerpendicular(arg));
     }
@@ -459,6 +464,12 @@ public:
         this->B = B;
         this->C = C;
         this->normalize();
+    }
+
+    Line2DD(const Line2DI &arg) {
+        this->A = (double)arg.getA();
+        this->B = (double)arg.getB();
+        this->C = (double)arg.getC();
     }
 
     double getA() const {
@@ -509,6 +520,11 @@ public:
         return Line2DD(
                 this->getB(), -this->getA(),
                 -(this->getB() * arg.getX() - this->getA() * arg.getY()));
+    }
+
+    Line2DD getParallel(const Point2DD &arg) const {
+        return Line2DD(this->getA(), this->getB(),
+            -(this->getA() * arg.getX() + this->getB() * arg.getY()));
     }
 
     Point2DD getProjection(const Point2DD &arg) const {
