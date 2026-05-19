@@ -1,5 +1,5 @@
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -140,6 +140,10 @@ public:
         return this->X == arg.getX() && this->Y == arg.getY();
     }
 
+    bool operator !=(const Point2DI &arg) const {
+        return !(*this == arg);
+    }
+
     void setX(long long X) {
         this->X = X;
     }
@@ -211,6 +215,10 @@ public:
     bool operator ==(const Point2DD &arg) const {
         return Math::abs(this->getX() - arg.getX()) < Math::Epsilon &&
                 Math::abs(this->getY() - arg.getY()) < Math::Epsilon;
+    }
+
+    bool operator !=(const Point2DD &arg) const {
+        return !(*this == arg);
     }
 
     void setX(double X) {
