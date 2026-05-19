@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class Math {
 public:
     static const double PI;
@@ -581,7 +579,7 @@ public:
                     Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
             }
-        } catch (string &s) {
+        } catch (std::string &s) {
             double DA = aa.distanceTo(ab);
             double DB = ba.distanceTo(bb);
             double DAA = aa.distanceTo(ba);
@@ -622,7 +620,7 @@ public:
         if (this->contains(this->L.getProjection(arg))) {
             return this->L.distanceTo(arg);
         } else {
-            return min(arg.distanceTo(this->A), arg.distanceTo(this->B));
+            return std::min(arg.distanceTo(this->A), arg.distanceTo(this->B));
         }
     }
 };
@@ -690,7 +688,7 @@ public:
                     Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
             }
-        } catch (string &s) {
+        } catch (std::string &s) {
             double DA = aa.distanceTo(ab);
             double DB = ba.distanceTo(bb);
             double DAA = aa.distanceTo(ba);
@@ -726,7 +724,7 @@ public:
         if (this->contains(this->L.getProjection(arg))) {
             return this->L.distanceTo(arg);
         } else {
-            return min(arg.distanceTo(this->A), arg.distanceTo(this->B));
+            return std::min(arg.distanceTo(this->A), arg.distanceTo(this->B));
         }
     }
 };
@@ -788,10 +786,10 @@ bool compPoint2DD(const Point2DD &arg1, const Point2DD &arg2) {
 
 class Polygon2DD {
 private:
-    vector<Point2DD> V;
+    std::vector<Point2DD> V;
 
 public:
-    Polygon2DD(const vector<Point2DD> &V) {
+    Polygon2DD(const std::vector<Point2DD> &V) {
         this->V = V;
     }
 
@@ -813,12 +811,12 @@ public:
 
     Polygon2DD getConvexHull() {
         int i;
-        vector<Point2DD> sortedV = this->V;
-        vector<Point2DD> list1;
-        vector<Point2DD> list2;
-        vector<Point2DD> answer;
-        sort(sortedV.begin(), sortedV.end(), compPoint2DD);
-        vector<Point2DD>::iterator it = unique(sortedV.begin(), sortedV.end());
+        std::vector<Point2DD> sortedV = this->V;
+        std::vector<Point2DD> list1;
+        std::vector<Point2DD> list2;
+        std::vector<Point2DD> answer;
+        std::sort(sortedV.begin(), sortedV.end(), compPoint2DD);
+        std::vector<Point2DD>::iterator it = unique(sortedV.begin(), sortedV.end());
         sortedV.resize( distance(sortedV.begin(), it) );
         if (sortedV.size() <= 2) {
             answer = sortedV;
