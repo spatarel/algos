@@ -94,7 +94,7 @@ public:
     }
 
     double angleWith(const Vector3DI &arg) const {
-        return acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+        return acos(std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm())));
     }
 };
 
@@ -149,7 +149,7 @@ public:
     }
 
     double angleWith(const Vector3DD &arg) const {
-        return acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+        return acos(std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm())));
     }
 };
 
