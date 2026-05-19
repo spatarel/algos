@@ -43,6 +43,61 @@ const double Math::PI = 3.14159265358979323846264338327950288419716939937510;
 
 const double Math::Epsilon = 0.000001;
 
+class Vector3DI {
+private:
+    long long X;
+    long long Y;
+    long long Z;
+public:
+    Vector3DI() {
+        this->X = 0;
+        this->Y = 0;
+        this->Z = 0;
+    }
+
+    Vector3DI(const long long &X, const long long &Y, const long long &Z) {
+        this->X = X;
+        this->Y = Y;
+        this->Z = Z;
+    }
+
+    void setX(const long long &X) {
+        this->X = X;
+    }
+
+    double getX() const {
+        return this->X;
+    }
+
+    void setY(const long long &Y) {
+        this->Y = Y;
+    }
+
+    double getY() const {
+        return this->Y;
+    }
+
+    void setZ(const long long &Z) {
+        this->Z = Z;
+    }
+
+    double getZ() const {
+        return this->Z;
+    }
+
+    double getNorm() const {
+        return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
+    }
+
+    long long dotProductWith(const Vector3DI &arg) const {
+        return this->X * arg.getX() + this->Y * arg.getY() + this->Z * arg.getZ();
+    }
+
+    double angleWith(const Vector3DI &arg) const {
+        return acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+    }
+};
+
 class Vector3DD {
 private:
     double X;
@@ -116,6 +171,12 @@ public:
         this->Z = Z;
     }
 
+    Point3DI(const Vector3DI &arg) {
+        this->X = arg.getX();
+        this->Y = arg.getY();
+        this->Z = arg.getZ();
+    }
+
     void setX(const long long &X) {
         this->X = X;
     }
@@ -169,6 +230,12 @@ public:
         this->X = X;
         this->Y = Y;
         this->Z = Z;
+    }
+
+    Point3DD(const Vector3DD &arg) {
+        this->X = arg.getX();
+        this->Y = arg.getY();
+        this->Z = arg.getZ();
     }
 
     void setX(const double &X) {
@@ -289,7 +356,7 @@ public:
         return this->getPointSign(arg) < Math::Epsilon;
     }
 
-    Vector3DD getNormal() const {
-      return Vector3DD(this->getA(), this->getB(), this->getC());
+    Vector3DI getNormal() const {
+      return Vector3DI(this->getA(), this->getB(), this->getC());
     }
 };
