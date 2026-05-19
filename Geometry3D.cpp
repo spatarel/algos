@@ -1,47 +1,9 @@
 #include <cmath>
 
-class Math {
-public:
-    static const double PI;
-
-    static const double Epsilon;
-
-    static long long abs(long long val){
-        if (val > 0) {
-            return  val;
-        } else {
-            return -val;
-        }
-    }
-
-    static double abs(double val) {
-        if (val > 0) {
-            return  val;
-        } else {
-            return -val;
-        }
-    }
-
-    static long long min(long long arg1, long long arg2) {
-        if (arg1 < arg2) {
-            return arg1;
-        } else {
-            return arg2;
-        }
-    }
-
-    static double min(double arg1, double arg2) {
-        if (arg1 < arg2) {
-            return arg1;
-        } else {
-            return arg2;
-        }
-    }
-};
-
-const double Math::PI = 3.14159265358979323846264338327950288419716939937510;
-
-const double Math::Epsilon = 0.000001;
+namespace Math {
+    const double PI = 4 * atan(1);
+    const double Epsilon = 1e-6;
+}
 
 class Vector3DI {
 private:
@@ -337,7 +299,7 @@ public:
     }
 
     double distanceTo(const Point3DI& arg) const {
-        return Math::abs(this->A * arg.getX() + this->B * arg.getY() + this->C * arg.getZ() + this->D) / this->norm;
+        return abs(this->A * arg.getX() + this->B * arg.getY() + this->C * arg.getZ() + this->D) / this->norm;
     }
 
     long long getPointSign(const Point3DI& arg) const {

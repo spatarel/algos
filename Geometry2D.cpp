@@ -4,32 +4,10 @@
 #include <string>
 #include <vector>
 
-class Math {
-public:
-    static const double PI;
-
-    static const double Epsilon;
-
-    static long long abs(long long val) {
-        if (val > 0) {
-            return  val;
-        } else {
-            return -val;
-        }
-    }
-
-    static double abs(double val) {
-        if (val > 0) {
-            return  val;
-        } else {
-            return -val;
-        }
-    }
-};
-
-const double Math::PI = 3.14159265358979323846264338327950288419716939937510;
-
-const double Math::Epsilon = 1e-6;
+namespace Math {
+    const double PI = 4 * atan(1);
+    const double Epsilon = 1e-6;
+}
 
 class Vector2DI {
 private:
@@ -167,7 +145,7 @@ public:
     }
 
     bool areCollinear(const Point2DI &A, const Point2DI &B) const {
-        return Math::abs(this->getPointSign(A, B)) == 0;
+        return this->getPointSign(A, B) == 0;
     }
 
     double getTriangleSurface(const Point2DI &A, const Point2DI &B) const {
@@ -211,8 +189,8 @@ public:
     }
 
     bool operator ==(const Point2DD &arg) const {
-        return Math::abs(this->getX() - arg.getX()) < Math::Epsilon &&
-                Math::abs(this->getY() - arg.getY()) < Math::Epsilon;
+        return fabs(this->getX() - arg.getX()) < Math::Epsilon
+            && fabs(this->getY() - arg.getY()) < Math::Epsilon;
     }
 
     bool operator !=(const Point2DD &arg) const {
@@ -248,7 +226,7 @@ public:
     }
 
     bool areCollinear(const Point2DD &A, const Point2DD &B) const {
-        return Math::abs(this->getPointSign(A, B)) < Math::Epsilon;
+        return fabs(this->getPointSign(A, B)) < Math::Epsilon;
     }
 
     double getTriangleSurface(const Point2DD &A, const Point2DD &B) const {
@@ -390,7 +368,7 @@ public:
     }
 
     double distanceTo(const Point2DD &arg) const {
-        return Math::abs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC()) / this->norm;
+        return fabs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC()) / this->norm;
     }
 
     bool isParallelWith(const Line2DI &arg) const {
@@ -491,17 +469,17 @@ public:
     }
 
     double distanceTo(const Point2DD &arg) const {
-        return Math::abs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->C);
+        return fabs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->C);
     }
 
     bool isParallelWith(const Line2DD &arg) const {
-        return Math::abs(this->getA() * arg.getB() - arg.getA() * this->getB()) < Math::Epsilon;
+        return fabs(this->getA() * arg.getB() - arg.getA() * this->getB()) < Math::Epsilon;
     }
 
     bool isTheSameAs(const Line2DD &arg) const {
-        return this->isParallelWith(arg) &&
-                Math::abs(this->getA() * arg.getC() - arg.getA() * this->getC()) < Math::Epsilon &&
-                Math::abs(this->getB() * arg.getC() - arg.getB() * this->getC()) < Math::Epsilon;
+        return this->isParallelWith(arg)
+            && fabs(this->getA() * arg.getC() - arg.getA() * this->getC()) < Math::Epsilon
+            && fabs(this->getB() * arg.getC() - arg.getB() * this->getC()) < Math::Epsilon;
     }
 
     Point2DD intersectWith(const Line2DD &arg) const {
@@ -519,7 +497,7 @@ public:
     }
 
     bool contains(const Point2DD &arg) const {
-        return Math::abs(this->getPointSign(arg)) < Math::Epsilon;
+        return fabs(this->getPointSign(arg)) < Math::Epsilon;
     }
 
     Line2DD getPerpendicular(const Point2DD &arg) const {
@@ -575,8 +553,8 @@ public:
         bb = Point2DD(B.B);
         try {
             sol = this->L.intersectWith(B.L);
-            if (Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon ||
-                    Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
+            if (fabs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon
+             || fabs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
             }
         } catch (std::string &s) {
@@ -586,18 +564,18 @@ public:
             double DAB = aa.distanceTo(bb);
             double DBA = ab.distanceTo(ba);
             double DBB = ab.distanceTo(bb);
-            if ((Math::abs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon) ||
-                (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
-                (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
-                (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
+            if ((fabs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon)
+             || (fabs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon)
+             || (fabs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon)
+             || (fabs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
                 throw "Segments don't intersect.";
             }
-            if ((Math::abs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon) ||
-                (Math::abs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
+            if ((fabs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon)
+             || (fabs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
                 sol = aa;
             }
-            if ((Math::abs(DA + DB - DAB) <= Math::Epsilon && DBA <= Math::Epsilon) ||
-                (Math::abs(DA + DB - DAA) <= Math::Epsilon && DBB <= Math::Epsilon)) {
+            if ((fabs(DA + DB - DAB) <= Math::Epsilon && DBA <= Math::Epsilon)
+             || (fabs(DA + DB - DAA) <= Math::Epsilon && DBB <= Math::Epsilon)) {
                 sol = ab;
             }
         } catch (int &i) {
@@ -607,13 +585,13 @@ public:
     }
 
     bool contains(const Point2DI &arg) const {
-        return this->L.contains(arg) &&
-                Math::abs(arg.distanceTo(this->A) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
+        return this->L.contains(arg)
+            && fabs(arg.distanceTo(this->A) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
     }
 
     bool contains(const Point2DD &arg) const {
-        return this->L.contains(arg) &&
-                Math::abs(arg.distanceTo(this->A) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
+        return this->L.contains(arg)
+            && fabs(arg.distanceTo(this->A) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
     }
 
     double distanceTo(const Point2DI &arg) const {
@@ -658,10 +636,10 @@ public:
                 double DAB = aa.distanceTo(bb);
                 double DBA = ab.distanceTo(ba);
                 double DBB = ab.distanceTo(bb);
-                if ((Math::abs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon) ||
-                    (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
-                    (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
-                    (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
+                if ((fabs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon)
+                 || (fabs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon)
+                 || (fabs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon)
+                 || (fabs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
                     return false;
                 } else {
                     return true;
@@ -671,8 +649,8 @@ public:
             }
         } else {
             sol = this->L.intersectWith(B.L);
-            return Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) < Math::Epsilon
-                && Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) < Math::Epsilon;
+            return fabs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) < Math::Epsilon
+                && fabs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) < Math::Epsilon;
         }
     }
 
@@ -684,8 +662,8 @@ public:
         bb = B.B;
         try {
             sol = this->L.intersectWith(B.L);
-            if (Math::abs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon ||
-                    Math::abs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
+            if (fabs(aa.distanceTo(sol) + sol.distanceTo(ab) - aa.distanceTo(ab)) > Math::Epsilon
+             || fabs(ba.distanceTo(sol) + sol.distanceTo(bb) - ba.distanceTo(bb)) > Math::Epsilon) {
                 throw 0;
             }
         } catch (std::string &s) {
@@ -695,18 +673,18 @@ public:
             double DAB = aa.distanceTo(bb);
             double DBA = ab.distanceTo(ba);
             double DBB = ab.distanceTo(bb);
-            if ((Math::abs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon) ||
-                (Math::abs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon) ||
-                (Math::abs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon) ||
-                (Math::abs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
+            if ((fabs(DA + DAA + DB - DBB) <= Math::Epsilon && DAA > Math::Epsilon)
+             || (fabs(DA + DAB + DB - DBA) <= Math::Epsilon && DAB > Math::Epsilon)
+             || (fabs(DA + DBA + DB - DAB) <= Math::Epsilon && DBA > Math::Epsilon)
+             || (fabs(DA + DBB + DB - DAA) <= Math::Epsilon && DBB > Math::Epsilon)) {
                 throw "Segments don't intersect";
             }
-            if ((Math::abs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon) ||
-                (Math::abs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
+            if ((fabs(DA + DB - DBB) <= Math::Epsilon && DAA <= Math::Epsilon)
+             || (fabs(DA + DB - DBA) <= Math::Epsilon && DAB <= Math::Epsilon)) {
                 sol = aa;
             }
-            if ((Math::abs(DA + DB - DAB) <= Math::Epsilon && DBA <= Math::Epsilon) ||
-                (Math::abs(DA + DB - DAA) <= Math::Epsilon && DBB <= Math::Epsilon)) {
+            if ((fabs(DA + DB - DAB) <= Math::Epsilon && DBA <= Math::Epsilon)
+             || (fabs(DA + DB - DAA) <= Math::Epsilon && DBB <= Math::Epsilon)) {
                 sol = ab;
             }
         } catch (int &s) {
@@ -716,8 +694,8 @@ public:
     }
 
     bool contains(const Point2DD &arg) const {
-        return this->L.contains(arg) &&
-                Math::abs(this->A.distanceTo(arg) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
+        return this->L.contains(arg)
+            && fabs(this->A.distanceTo(arg) + arg.distanceTo(this->B) - this->A.distanceTo(this->B)) < Math::Epsilon;
     }
 
     double distanceTo(const Point2DD &arg) const {
@@ -767,7 +745,7 @@ public:
     }
 
     double getArea() {
-        return Math::abs(this->A.getTriangleSurface(this->B, this->C));
+        return fabs(this->A.getTriangleSurface(this->B, this->C));
     }
 
     Point2DD getCircumscribedCircleCenter() {
@@ -806,7 +784,7 @@ public:
         for (i = 1; i + 1 < (int)this->V.size(); ++i) {
             answer += this->V[0].getTriangleSurface(this->V[i], this->V[i + 1]);
         }
-        return Math::abs(answer);
+        return fabs(answer);
     }
 
     Polygon2DD getConvexHull() {
