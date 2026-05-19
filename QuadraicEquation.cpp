@@ -6,8 +6,8 @@ private:
     double b;
     double c;
 
-    double x1;
-    double x2;
+    double x1 = 0;
+    double x2 = 0;
 public:
     void setA(double a) {
         this->a = a;
