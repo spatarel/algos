@@ -49,7 +49,7 @@ public:
     }
 
     double angleWith(const Vector2DI &arg) const {
-        return acos(std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm())));
+        return acos(std::max(-1.0, std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()))));
     }
 };
 
@@ -93,7 +93,7 @@ public:
     }
 
     double angleWith(const Vector2DD &arg) const {
-        return acos(std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm())));
+        return acos(std::max(-1.0, std::min(1.0, this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()))));
     }
 };
 
@@ -298,18 +298,18 @@ public:
     Point2DP(const double X, const double Y) {
         this->distance = sqrt((double)(X * X + Y * Y));
         if (Y >= 0) {
-            this->angle = acos(std::min(1.0, X / this->distance));
+            this->angle = acos(std::max(-1.0, std::min(1.0, X / this->distance)));
         } else {
-            this->angle = 2 * Math::PI - acos(std::min(1.0, X / this->distance));
+            this->angle = 2 * Math::PI - acos(std::max(-1.0, std::min(1.0, X / this->distance)));
         }
     }
 
     Point2DP(const Point2DD &arg) {
         this->distance = sqrt((double)(arg.getX() * arg.getX() + arg.getY() * arg.getY()));
         if (arg.getY() >= 0) {
-            this->angle = acos(std::min(1.0, arg.getX() / this->distance));
+            this->angle = acos(std::max(-1.0, std::min(1.0, arg.getX() / this->distance)));
         } else {
-            this->angle = 2 * Math::PI - acos(std::min(1.0, arg.getX() / this->distance));
+            this->angle = 2 * Math::PI - acos(std::max(-1.0, std::min(1.0, arg.getX() / this->distance)));
         }
     }
 
