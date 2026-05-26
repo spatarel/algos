@@ -447,6 +447,14 @@ public:
         this->norm = this->computeNorm();
     }
 
+    Plane3DI(long long A, long long B, long long C, long long D) {
+        this->A = A;
+        this->B = B;
+        this->C = C;
+        this->D = D;
+        this->norm = this->computeNorm();
+    }
+
     long long getA() const {
         return this->A;
     }
@@ -530,6 +538,14 @@ public:
                   - A.getZ() * B.getX() * C.getY()
                   - A.getY() * B.getZ() * C.getX()
                   + A.getZ() * B.getY() * C.getX();
+        this->norm = this->computeNorm();
+    }
+
+    Plane3DD(double A, double B, double C, double D) {
+        this->A = A;
+        this->B = B;
+        this->C = C;
+        this->D = D;
         this->norm = this->computeNorm();
     }
 
