@@ -57,11 +57,11 @@ public:
     }
 
     double getNorm() const {
-        return sqrt(this->getX() * this->getX() + this->getY() * this->getY());
+        return sqrt(this->X * this->X + this->Y * this->Y);
     }
 
     long long dotProductWith(const Vector2DI &arg) const {
-        return this->getX() * arg.getX() + this->getY() * arg.getY();
+        return this->X * arg.X + this->Y * arg.Y;
     }
 
     double angleWith(const Vector2DI &arg) const {
@@ -106,11 +106,11 @@ public:
     }
 
     double getNorm() const {
-        return sqrt(this->getX() * this->getX() + this->getY() * this->getY());
+        return sqrt(this->X * this->X + this->Y * this->Y);
     }
 
     double dotProductWith(const Vector2DD &arg) const {
-        return this->getX() * arg.getX() + this->getY() * arg.getY();
+        return this->X * arg.X + this->Y * arg.Y;
     }
 
     double angleWith(const Vector2DD &arg) const {
@@ -139,7 +139,7 @@ public:
     }
 
     bool operator ==(const Point2DI &arg) const {
-        return this->X == arg.getX() && this->Y == arg.getY();
+        return this->X == arg.X && this->Y == arg.Y;
     }
 
     bool operator !=(const Point2DI &arg) const {
@@ -168,20 +168,17 @@ public:
         return sqrt(dx * dx + dy * dy);
     }
 
-    long long getPointSign(const Point2DI &A, const Point2DI &B) const {
-        return A.getX() * B.getY() + B.getX() * this->Y + this->getX() * A.getY() - A.getX() * this->getY() - B.getX() * A.getY() - this->getX() * B.getY();
+    long long getAreaSgn2(const Point2DI &A, const Point2DI &B) const {
+        return A.X * B.Y     + B.X * this->Y + this->X * A.Y
+             - A.X * this->Y - B.X * A.Y     - this->X * B.Y;
     }
 
     bool areCollinear(const Point2DI &A, const Point2DI &B) const {
-        return this->getPointSign(A, B) == 0;
-    }
-
-    double getTriangleSurface(const Point2DI &A, const Point2DI &B) const {
-        return (A.getX() * B.getY() + B.getX() * this->getY() + this->getX() * A.getY() - A.getX() * this->getY() - B.getX() * A.getY() - this->getX() * B.getY()) / 2.0;
+        return this->getAreaSgn2(A, B) == 0;
     }
 
     Vector2DI getVectorWith(const Point2DI &arg) const {
-        return Vector2DI(arg.getX() - this->getX(), arg.getY() - this->getY());
+        return Vector2DI(arg.X - this->X, arg.Y - this->Y);
     }
 
     double getAngle(const Point2DI &B, const Point2DI &C) const {
@@ -192,7 +189,8 @@ public:
     }
 
     Point2DI getSymetricOf(const Point2DI &arg) const {
-        return Point2DI(2 * this->getX() - arg.getX(), 2 * this->getY() - arg.getY());
+        return Point2DI(2 * this->X - arg.X,
+                        2 * this->Y - arg.Y);
     }
 };
 
@@ -250,8 +248,8 @@ public:
     }
 
     bool operator ==(const Point2DD &arg) const {
-        return Math::areEq(this->getX(), arg.getX())
-            && Math::areEq(this->getY(), arg.getY());
+        return Math::areEq(this->X, arg.X)
+            && Math::areEq(this->Y, arg.Y);
     }
 
     bool operator !=(const Point2DD &arg) const {
@@ -275,21 +273,18 @@ public:
     }
 
     double distanceTo(const Point2DD &arg) const {
-        double dx = this->getX() - arg.getX();
-        double dy = this->getY() - arg.getY();
+        double dx = this->X - arg.X;
+        double dy = this->Y - arg.Y;
         return sqrt(dx * dx + dy * dy);
     }
 
-    double getPointSign(const Point2DD &A, const Point2DD &B) const {
-        return A.getX() * B.getY() + B.getX() * this->getY() + this->getX() * A.getY() - A.getX() * this->getY() - B.getX() * A.getY() - this->getX() * B.getY();
+    double getAreaSgn2(const Point2DD &A, const Point2DD &B) const {
+        return A.X * B.Y     + B.X * this->Y + this->X * A.Y
+             - A.X * this->Y - B.X * A.Y     - this->X * B.Y;
     }
 
     bool areCollinear(const Point2DD &A, const Point2DD &B) const {
-        return Math::areEq(this->getPointSign(A, B), 0);
-    }
-
-    double getTriangleSurface(const Point2DD &A, const Point2DD &B) const {
-        return (A.getX() * B.getY() + B.getX() * this->getY() + this->getX() * A.getY() - A.getX() * this->getY() - B.getX() * A.getY() - this->getX() * B.getY()) / 2.0;
+        return Math::areEq(this->getAreaSgn2(A, B), 0);
     }
 
     Vector2DD getVectorWith(const Point2DD &arg) const {
@@ -426,35 +421,33 @@ public:
     }
 
     double distanceTo(const Point2DD &arg) const {
-        return fabs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC()) / this->norm;
+        return fabs(this->A * arg.getX() + this->B * arg.getY() + this->C) / this->norm;
     }
 
     bool isParallelWith(const Line2DI &arg) const {
-        return this->getA() * arg.getB() == arg.getA() * this->getB();
+        return this->A * arg.B == arg.A * this->B;
     }
 
     bool isTheSameAs(const Line2DI &arg) const {
         return this->isParallelWith(arg)
-            && this->A * arg.getC() == arg.getA() * this->getC()
-            && this->B * arg.getC() == arg.getB() * this->getC();
+            && this->A * arg.C == arg.A * this->C
+            && this->B * arg.C == arg.B * this->C;
     }
 
     Point2DD intersectWith(const Line2DI &arg) const {
         if (this->isParallelWith(arg)) {
             throw "Lines don't intersect.";
         }
-        Point2DD sol = Point2DD();
-        sol.setX((double)(arg.getC() * this->getB() - this->getC() * arg.getB()) / (this->getA() * arg.getB() - this->getB() * arg.getA()));
-        sol.setY((double)(arg.getC() * this->getA() - this->getC() * arg.getA()) / (this->getB() * arg.getA() - this->getA() * arg.getB()));
-        return sol;
+        return Point2DD((double)(arg.C * this->B - this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
+                        (double)(arg.C * this->A - this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
     }
 
     long long getPointSign(const Point2DI &arg) const {
-        return this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC();
+        return this->A * arg.getX() + this->B * arg.getY() + this->C;
     }
 
     double getPointSign(const Point2DD &arg) const {
-        return this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC();
+        return this->A * arg.getX() + this->B * arg.getY() + this->C;
     }
 
     bool contains(const Point2DI &arg) const {
@@ -466,18 +459,22 @@ public:
     }
 
     Line2DI getPerpendicular(const Point2DI &arg) const {
-        return Line2DI(
-                this->getB(), -this->getA(),
-                -(this->getB() * arg.getX() - this->getA() * arg.getY()));
+        return Line2DI(this->B, -this->A,
+            -(this->B * arg.getX() - this->A * arg.getY()));
     }
 
     Line2DI getParallel(const Point2DI &arg) const {
-        return Line2DI(this->getA(), this->getB(),
-            -(this->getA() * arg.getX() + this->getB() * arg.getY()));
+        return Line2DI(this->A, this->B,
+            -(this->A * arg.getX() + this->B * arg.getY()));
     }
 
     Point2DD getProjection(const Point2DI &arg) const {
         return this->intersectWith(this->getPerpendicular(arg));
+    }
+
+    Point2DD getPointAtDistance(const Point2DD &arg, const double distance) const {
+        return Point2DD(arg.getX() + this->B * distance / this->norm,
+                        arg.getY() - this->A * distance / this->norm);
     }
 };
 
@@ -501,7 +498,7 @@ public:
         this->normalize();
     }
 
-    Line2DD(const double A, const double B, const double C) {
+    Line2DD(double A, double B, double C) {
         this->A = A;
         this->B = B;
         this->C = C;
@@ -527,31 +524,29 @@ public:
     }
 
     double distanceTo(const Point2DD &arg) const {
-        return fabs(this->getA() * arg.getX() + this->getB() * arg.getY() + this->C);
+        return fabs(this->A * arg.getX() + this->B * arg.getY() + this->C);
     }
 
     bool isParallelWith(const Line2DD &arg) const {
-        return Math::areEq(this->getA() * arg.getB() - arg.getA() * this->getB(), 0);
+        return Math::areEq(this->A * arg.B, arg.A * this->B);
     }
 
     bool isTheSameAs(const Line2DD &arg) const {
         return this->isParallelWith(arg)
-            && Math::areEq(this->getA() * arg.getC() - arg.getA() * this->getC(), 0)
-            && Math::areEq(this->getB() * arg.getC() - arg.getB() * this->getC(), 0);
+            && Math::areEq(this->A * arg.C, arg.A * this->C)
+            && Math::areEq(this->B * arg.C, arg.B * this->C);
     }
 
     Point2DD intersectWith(const Line2DD &arg) const {
         if (this->isParallelWith(arg)) {
             throw "Lines are parallel.";
         }
-        Point2DD sol;
-        sol.setX((arg.getC() * this->getB() - this->getC() * arg.getB()) / (this->getA() * arg.getB() - this->getB() * arg.getA()));
-        sol.setY((arg.getC() * this->getA() - this->getC() * arg.getA()) / (this->getB() * arg.getA() - this->getA() * arg.getB()));
-        return sol;
+        return Point2DD((arg.C * this->B - this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
+                        (arg.C * this->A - this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
     }
 
     double getPointSign(const Point2DD &arg) const {
-        return this->getA() * arg.getX() + this->getB() * arg.getY() + this->getC();
+        return this->A * arg.getX() + this->B * arg.getY() + this->C;
     }
 
     bool contains(const Point2DD &arg) const {
@@ -559,14 +554,13 @@ public:
     }
 
     Line2DD getPerpendicular(const Point2DD &arg) const {
-        return Line2DD(
-                this->getB(), -this->getA(),
-                -(this->getB() * arg.getX() - this->getA() * arg.getY()));
+        return Line2DD(this->B, -this->A,
+            -(this->B * arg.getX() - this->A * arg.getY()));
     }
 
     Line2DD getParallel(const Point2DD &arg) const {
-        return Line2DD(this->getA(), this->getB(),
-            -(this->getA() * arg.getX() + this->getB() * arg.getY()));
+        return Line2DD(this->A, this->B,
+            -(this->A * arg.getX() + this->B * arg.getY()));
     }
 
     Point2DD getProjection(const Point2DD &arg) const {
@@ -578,9 +572,8 @@ public:
     }
 
     Point2DD getPointAtDistance(const Point2DD &arg, const double distance) const {
-        return Point2DD(
-                arg.getX() + this->getB() * distance,
-                arg.getY() - this->getA() * distance);
+        return Point2DD(arg.getX() + this->B * distance,
+                        arg.getY() - this->A * distance);
     }
 };
 
@@ -600,7 +593,8 @@ public:
     }
 
     Point2DD getMiddle() {
-        return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
+        return Point2DD((A.getX() + B.getX()) / 2.0,
+                        (A.getY() + B.getY()) / 2.0);
     }
 
     Point2DD intersectWith(const Segment2DI &B) const {
@@ -677,7 +671,8 @@ public:
     }
 
     Point2DD getMiddle() {
-        return Point2DD((A.getX() + B.getX()) / 2.0, (A.getY() + B.getY()) / 2.0);
+        return Point2DD((A.getX() + B.getX()) / 2.0,
+                        (A.getY() + B.getY()) / 2.0);
     }
 
     bool isIntersectingWith(const Segment2DD &B) const {
@@ -803,7 +798,7 @@ public:
     }
 
     double getArea() {
-        return fabs(this->A.getTriangleSurface(this->B, this->C));
+        return fabs(this->A.getAreaSgn2(this->B, this->C)) / 2.0;
     }
 
     Point2DD getCircumcenter() { // circumscribed circle center
@@ -824,5 +819,73 @@ public:
 
     Point2DD getCentroid() { // center of mass
         return (A + B + C) / 3;
+    }
+};
+
+
+#include <algorithm>
+#include <vector>
+class Geometry {
+private:
+    static bool cmpByYX(const Point2DI &A, const Point2DI &B) {
+        return (A.getY() < B.getY())
+            || (A.getY() == B.getY() && A.getX() < B.getX());
+    }
+
+    static bool cmpByNorm(const Point2DI &A, const Point2DI &B) {
+        return A.getX() * A.getX() + A.getY() * A.getY()
+             < B.getX() * B.getX() + B.getY() * B.getY();
+    }
+
+    static bool eqByPolarAngle(const Point2DI &A, const Point2DI &B) {
+        return A.getX() * B.getY() == A.getY() * B.getX();
+    }
+
+    static bool cmpByPolarAngleAndNorm(const Point2DI &A, const Point2DI &B) {
+        return (A.getX() * B.getY() - A.getY() * B.getX() > 0)
+            || (A.getX() * B.getY() - A.getY() * B.getX() == 0 && cmpByNorm(A, B));
+    }
+
+public:
+    static long long areaSgn2(const Point2DI &A, const Point2DI &B, const Point2DI &C) {
+        return A.getAreaSgn2(B, C);
+    }
+
+    static std::vector<Point2DI> convexHull(std::vector<Point2DI> points) {
+        for (int i = 1; i < (int)points.size(); i++) {
+            if (!cmpByYX(points[0], points[i])) {
+                std::swap(points[0], points[i]);
+            }
+        }
+        Point2DI T = points[0];
+        for (Point2DI &point : points) {
+            point -= T;
+        }
+        std::sort(points.begin() + 1, points.end(), cmpByPolarAngleAndNorm);
+
+        std::vector<Point2DI> newPoints;
+        newPoints.push_back(points[0]);
+        newPoints.push_back(points[1]);
+        for (int i = 2; i < (int)points.size(); i++) {
+            if (eqByPolarAngle(points[i - 1], points[i])) {
+                newPoints.pop_back();
+            }
+            newPoints.push_back(points[i]);
+        }
+
+        points = newPoints;
+        for (Point2DI &point : points) {
+            point += T;
+        }
+
+        std::vector<Point2DI> convexHull;
+        for (Point2DI point : points) {
+            while (convexHull.size() >= 2 && areaSgn2(
+                convexHull.end()[-2], convexHull.end()[-1], point) < 0) {
+                convexHull.pop_back();
+            }
+            convexHull.push_back(point);
+        }
+        return convexHull;
     }
 };
