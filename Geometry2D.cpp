@@ -29,6 +29,13 @@ namespace Math {
   bool isZero(const double a) {
     return fabs(a) < Math::Epsilon;
   }
+
+  template<class C>
+  void sort(C &a, C &b) {
+    if (a > b) {
+      std::swap(a, b);
+    }
+  }
 }
 
 class Vector2DI {
@@ -461,9 +468,6 @@ public:
   }
 
   Point2DD intersectWith(const Line2DI &arg) const {
-    if (this->isParallelWith(arg)) {
-      throw "Lines don't intersect.";
-    }
     return Point2DD((double)(arg.C * this->B - this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
                     (double)(arg.C * this->A - this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
   }
@@ -574,9 +578,6 @@ public:
   }
 
   Point2DD intersectWith(const Line2DD &arg) const {
-    if (this->isParallelWith(arg)) {
-      throw "Lines are parallel.";
-    }
     return Point2DD((arg.C * this->B - this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
                     (arg.C * this->A - this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
   }
@@ -638,43 +639,70 @@ public:
                     (A.getY() + B.getY()) / 2.0);
   }
 
-  Point2DD intersectWith(const Segment2DI &B) const {
-    Point2DD aa, ab, ba, bb, sol;
-    aa = Point2DD(this->A);
-    ab = Point2DD(this->B);
-    ba = Point2DD(B.A);
-    bb = Point2DD(B.B);
-    try {
-      sol = this->L.intersectWith(B.L);
-      if (!Math::areEq(aa.distanceTo(sol) + sol.distanceTo(ab), aa.distanceTo(ab))
-       || !Math::areEq(ba.distanceTo(sol) + sol.distanceTo(bb), ba.distanceTo(bb))) {
-        throw 0;
-      }
-    } catch (const char* s) {
-      double DA = aa.distanceTo(ab);
-      double DB = ba.distanceTo(bb);
-      double DAA = aa.distanceTo(ba);
-      double DAB = aa.distanceTo(bb);
-      double DBA = ab.distanceTo(ba);
-      double DBB = ab.distanceTo(bb);
-      if ((Math::areEq(DA + DAA + DB, DBB) && !Math::isZero(DAA))
-       || (Math::areEq(DA + DAB + DB, DBA) && !Math::isZero(DAB))
-       || (Math::areEq(DA + DBA + DB, DAB) && !Math::isZero(DBA))
-       || (Math::areEq(DA + DBB + DB, DAA) && !Math::isZero(DBB))) {
-        throw "Segments don't intersect.";
-      }
-      if ((Math::areEq(DA + DB, DBB) && Math::isZero(DAA))
-       || (Math::areEq(DA + DB, DBA) && Math::isZero(DAB))) {
-        sol = aa;
-      }
-      if ((Math::areEq(DA + DB, DAB) && Math::isZero(DBA))
-       || (Math::areEq(DA + DB, DAA) && Math::isZero(DBB))) {
-        sol = ab;
-      }
-    } catch (int &i) {
-      throw "Segments don't intersect.";
+  bool isParallelWith(const Segment2DI &B) const {
+    return this->L.isParallelWith(B.L);
+  }
+
+  bool isIntersectingWithP(const Segment2DI &B) const {
+    const Point2DI &aa = this->A;
+    const Point2DI &ab = this->B;
+    const Point2DI &ba = B.A;
+    const Point2DI &bb = B.B;
+    if (this->L.isTheSameAs(B.L)) {
+      long long a = this->L.getB();
+      long long b =-this->L.getA();
+      // distSgn = a * x + b * y
+      long long distSgnAA = a * aa.getX() + b * aa.getY();
+      long long distSgnAB = a * ab.getX() + b * ab.getY();
+      long long distSgnBA = a * ba.getX() + b * ba.getY();
+      long long distSgnBB = a * bb.getX() + b * bb.getY();
+      Math::sort(distSgnAA, distSgnAB);
+      Math::sort(distSgnBA, distSgnBB);
+      return distSgnBA <= distSgnAB && distSgnAA <= distSgnBB;
+    } else {
+      return false;
     }
-    return sol;
+  }
+
+  bool isIntersectingWithNonP(const Segment2DI &B) const {
+    long long aax = this->A.getX(), aay = this->A.getY();
+    long long abx = this->B.getX(), aby = this->B.getY();
+    long long bax = B.A.getX(), bay = B.A.getY();
+    long long bbx = B.B.getX(), bby = B.B.getY();
+    Math::sort(aax, abx); Math::sort(aay, aby);
+    Math::sort(bax, bbx); Math::sort(bay, bby);
+    long long pxa = B.L.getC() * this->L.getB() - this->L.getC() * B.L.getB();
+    long long pxb = this->L.getA() * B.L.getB() - this->L.getB() * B.L.getA();
+    if (pxb < 0) {
+      pxa = -pxa;
+      pxb = -pxb;
+    }
+    long long pya = B.L.getC() * this->L.getA() - this->L.getC() * B.L.getA();
+    long long pyb = this->L.getB() * B.L.getA() - this->L.getA() * B.L.getB();
+    if (pyb < 0) {
+      pya = -pya;
+      pyb = -pyb;
+    }
+    bool ok = true;
+    if (aax == abx) {
+      ok &= (aay * pyb <= pya);
+      ok &= (pya <= aby * pyb);
+    } else {
+      ok &= (aax * pxb <= pxa);
+      ok &= (pxa <= abx * pxb);
+    }
+    if (bax == bbx) {
+      ok &= (bay * pyb <= pya);
+      ok &= (pya <= bby * pyb);
+    } else {
+      ok &= (bax * pxb <= pxa);
+      ok &= (pxa <= bbx * pxb);
+    }
+    return ok;
+  }
+
+  Point2DD intersectWith(const Segment2DI &B) const {
+    return this->L.intersectWith(B.L);
   }
 
   bool contains(const Point2DI &arg) const {
@@ -717,75 +745,70 @@ public:
                     (A.getY() + B.getY()) / 2.0);
   }
 
-  bool isIntersectingWith(const Segment2DD &B) const {
-    Point2DD aa, ab, ba, bb, sol;
-    aa = this->A;
-    ab = this->B;
-    ba = B.A;
-    bb = B.B;
-    if (this->L.isParallelWith(B.L)) {
-      if (this->L.isTheSameAs(B.L)) {
-        double DA = aa.distanceTo(ab);
-        double DB = ba.distanceTo(bb);
-        double DAA = aa.distanceTo(ba);
-        double DAB = aa.distanceTo(bb);
-        double DBA = ab.distanceTo(ba);
-        double DBB = ab.distanceTo(bb);
-        if ((Math::areEq(DA + DAA + DB, DBB) && !Math::isZero(DAA))
-         || (Math::areEq(DA + DAB + DB, DBA) && !Math::isZero(DAB))
-         || (Math::areEq(DA + DBA + DB, DAB) && !Math::isZero(DBA))
-         || (Math::areEq(DA + DBB + DB, DAA) && !Math::isZero(DBB))) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return false;
-      }
+  bool isParallelWith(const Segment2DD &B) const {
+    return this->L.isParallelWith(B.L);
+  }
+
+  bool isIntersectingWithP(const Segment2DD &B) const {
+    const Point2DD &aa = this->A;
+    const Point2DD &ab = this->B;
+    const Point2DD &ba = B.A;
+    const Point2DD &bb = B.B;
+    if (this->L.isTheSameAs(B.L)) {
+      double a = this->L.getB();
+      double b =-this->L.getA();
+      // distSgn = a * x + b * y
+      double distSgnAA = a * aa.getX() + b * aa.getY();
+      double distSgnAB = a * ab.getX() + b * ab.getY();
+      double distSgnBA = a * ba.getX() + b * ba.getY();
+      double distSgnBB = a * bb.getX() + b * bb.getY();
+      Math::sort(distSgnAA, distSgnAB);
+      Math::sort(distSgnBA, distSgnBB);
+      return distSgnBA <= distSgnAB && distSgnAA <= distSgnBB;
     } else {
-      sol = this->L.intersectWith(B.L);
-      return Math::areEq(aa.distanceTo(sol) + sol.distanceTo(ab), aa.distanceTo(ab))
-          && Math::areEq(ba.distanceTo(sol) + sol.distanceTo(bb), ba.distanceTo(bb));
+      return false;
     }
   }
 
-  Point2DD intersectWith(const Segment2DD &B) const {
-    Point2DD aa, ab, ba, bb, sol;
-    aa = this->A;
-    ab = this->B;
-    ba = B.A;
-    bb = B.B;
-    try {
-      sol = this->L.intersectWith(B.L);
-      if (!Math::areEq(aa.distanceTo(sol) + sol.distanceTo(ab), aa.distanceTo(ab))
-       || !Math::areEq(ba.distanceTo(sol) + sol.distanceTo(bb), ba.distanceTo(bb))) {
-        throw 0;
-      }
-    } catch (const char* &s) {
-      double DA = aa.distanceTo(ab);
-      double DB = ba.distanceTo(bb);
-      double DAA = aa.distanceTo(ba);
-      double DAB = aa.distanceTo(bb);
-      double DBA = ab.distanceTo(ba);
-      double DBB = ab.distanceTo(bb);
-      if ((Math::areEq(DA + DAA + DB, DBB) && !Math::isZero(DAA))
-       || (Math::areEq(DA + DAB + DB, DBA) && !Math::isZero(DAB))
-       || (Math::areEq(DA + DBA + DB, DAB) && !Math::isZero(DBA))
-       || (Math::areEq(DA + DBB + DB, DAA) && !Math::isZero(DBB))) {
-        throw "Segments don't intersect";
-      }
-      if ((Math::areEq(DA + DB, DBB) && Math::isZero(DAA))
-       || (Math::areEq(DA + DB, DBA) && Math::isZero(DAB))) {
-        sol = aa;
-      }
-      if ((Math::areEq(DA + DB, DAB) && Math::isZero(DBA))
-       || (Math::areEq(DA + DB, DAA) && Math::isZero(DBB))) {
-        sol = ab;
-      }
-    } catch (int &s) {
-      throw "Segments don't intersect";
+  bool isIntersectingWithNonP(const Segment2DD &B) const {
+    double aax = this->A.getX(), aay = this->A.getY();
+    double abx = this->B.getX(), aby = this->B.getY();
+    double bax = B.A.getX(), bay = B.A.getY();
+    double bbx = B.B.getX(), bby = B.B.getY();
+    Math::sort(aax, abx); Math::sort(aay, aby);
+    Math::sort(bax, bbx); Math::sort(bay, bby);
+    double pxa = B.L.getC() * this->L.getB() - this->L.getC() * B.L.getB();
+    double pxb = this->L.getA() * B.L.getB() - this->L.getB() * B.L.getA();
+    if (pxb < 0) {
+      pxa = -pxa;
+      pxb = -pxb;
     }
-    return sol;
+    double pya = B.L.getC() * this->L.getA() - this->L.getC() * B.L.getA();
+    double pyb = this->L.getB() * B.L.getA() - this->L.getA() * B.L.getB();
+    if (pyb < 0) {
+      pya = -pya;
+      pyb = -pyb;
+    }
+    bool ok = true;
+    if (Math::areEq(aax, abx)) {
+      ok &= (aay * pyb <= pya);
+      ok &= (pya <= aby * pyb);
+    } else {
+      ok &= (aax * pxb <= pxa);
+      ok &= (pxa <= abx * pxb);
+    }
+    if (Math::areEq(bax, bbx)) {
+      ok &= (bay * pyb <= pya);
+      ok &= (pya <= bby * pyb);
+    } else {
+      ok &= (bax * pxb <= pxa);
+      ok &= (pxa <= bbx * pxb);
+    }
+    return ok;
+  }
+
+  Point2DD intersectWith(const Segment2DD &B) const {
+    return this->L.intersectWith(B.L);
   }
 
   bool contains(const Point2DD &arg) const {
