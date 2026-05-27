@@ -492,12 +492,12 @@ private:
   long long B;
   long long C;
   long long D;
-  double norm;
+  double invNorm;
 
   void normalize() {
-    this->norm = sqrt(this->A * this->A
-                    + this->B * this->B
-                    + this->C * this->C);
+    this->invNorm = 1.0 / sqrt(this->A * this->A
+                             + this->B * this->B
+                             + this->C * this->C);
   }
 
 public:
@@ -569,11 +569,11 @@ public:
   }
 
   double distanceTo(const Point3DI& arg) const {
-    return abs(this->getPointSign(arg)) / this->norm;
+    return abs(this->getPointSign(arg)) * this->invNorm;
   }
 
   double distanceTo(const Point3DD& arg) const {
-    return fabs(this->getPointSign(arg)) / this->norm;
+    return fabs(this->getPointSign(arg)) * this->invNorm;
   }
 
   bool contains(const Point3DI& arg) const {
@@ -591,15 +591,12 @@ private:
   double B;
   double C;
   double D;
+  double invNorm;
 
   void normalize() {
-    double norm = sqrt(this->A * this->A
-                     + this->B * this->B
-                     + this->C * this->C);
-    this->A /= norm;
-    this->B /= norm;
-    this->C /= norm;
-    this->D /= norm;
+    this->invNorm = 1.0 / sqrt(this->A * this->A
+                             + this->B * this->B
+                             + this->C * this->C);
   }
 
 public:
@@ -667,7 +664,7 @@ public:
   }
 
   double distanceTo(const Point3DD& arg) const {
-    return fabs(this->getPointSign(arg));
+    return fabs(this->getPointSign(arg)) * this->invNorm;
   }
 
   bool contains(const Point3DD& arg) const {

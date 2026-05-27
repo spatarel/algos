@@ -420,10 +420,10 @@ private:
   long long A;
   long long B;
   long long C;
-  double norm;
+  double invNorm;
 
   void normalize() {
-    this->norm = sqrt(this->A * this->A + this->B * this->B);
+    this->invNorm = 1.0 / sqrt(this->A * this->A + this->B * this->B);
   }
 
 public:
@@ -481,11 +481,11 @@ public:
   }
 
   double distanceTo(const Point2DI &arg) const {
-    return abs(this->getPointSign(arg)) / this->norm;
+    return abs(this->getPointSign(arg)) * this->invNorm;
   }
 
   double distanceTo(const Point2DD &arg) const {
-    return fabs(this->getPointSign(arg)) / this->norm;
+    return fabs(this->getPointSign(arg)) * this->invNorm;
   }
 
   bool contains(const Point2DI &arg) const {
@@ -511,8 +511,8 @@ public:
   }
 
   Point2DD getPointAtDistance(const Point2DD &arg, const double distance) const {
-    return Point2DD(arg.getX() + this->B * distance / this->norm,
-                    arg.getY() - this->A * distance / this->norm);
+    return Point2DD(arg.getX() + this->B * distance * this->invNorm,
+                    arg.getY() - this->A * distance * this->invNorm);
   }
 };
 
@@ -521,13 +521,10 @@ private:
   double A;
   double B;
   double C;
+  double invNorm;
 
   void normalize() {
-    double norm = sqrt(this->A * this->A
-                     + this->B * this->B);
-    this->A /= norm;
-    this->B /= norm;
-    this->C /= norm;
+    this->invNorm = 1.0 / sqrt(this->A * this->A + this->B * this->B);
   }
 
 public:
@@ -587,11 +584,11 @@ public:
   }
 
   double distanceTo(const Point2DD &arg) const {
-    return fabs(this->getPointSign(arg));
+    return fabs(this->getPointSign(arg)) * this->invNorm;
   }
 
   bool contains(const Point2DD &arg) const {
-    return Math::isZero(this->getPointSign(arg));
+    return Math::isZero(this->getPointSign(arg) * this->invNorm);
   }
 
   Line2DD getPerpendicular(const Point2DD &arg) const {
@@ -613,8 +610,8 @@ public:
   }
 
   Point2DD getPointAtDistance(const Point2DD &arg, const double distance) const {
-    return Point2DD(arg.getX() + this->B * distance,
-                    arg.getY() - this->A * distance);
+    return Point2DD(arg.getX() + this->B * distance * this->invNorm,
+                    arg.getY() - this->A * distance * this->invNorm);
   }
 };
 
