@@ -4,23 +4,23 @@ namespace Math {
     const double PI = 4 * atan(1);
     const double Epsilon = 1e-6;
 
-    double asin(double arg) {
+    double asin(const double arg) {
         return ::asin(std::max(-1.0, std::min(1.0, arg)));
     }
 
-    double acos(double arg) {
+    double acos(const double arg) {
         return ::acos(std::max(-1.0, std::min(1.0, arg)));
     }
 
-    double degToRad(double deg) {
+    double degToRad(const double deg) {
         return deg / 180 * PI;
     }
 
-    double radToDeg(double rad) {
+    double radToDeg(const double rad) {
         return rad / PI * 180;
     }
 
-    bool areEq(double a, double b) {
+    bool areEq(const double a, const double b) {
         return fabs((a - b) / std::max(1.0, b)) < Math::Epsilon;
     }
 }
@@ -79,7 +79,7 @@ public:
         this->Y = 0;
     }
 
-    Vector2DD(double X, double Y) {
+    Vector2DD(const double X, const double Y) {
         this->X = X;
         this->Y = Y;
     }
@@ -89,7 +89,7 @@ public:
         this->Y = arg.getY();
     }
 
-    void setX(double X) {
+    void setX(const double X) {
         this->X = X;
     }
 
@@ -97,7 +97,7 @@ public:
         return this->X;
     }
 
-    void setY(double Y) {
+    void setY(const double Y) {
         this->Y = Y;
     }
 
@@ -128,7 +128,7 @@ public:
         this->Y = 0;
     }
 
-    Point2DI(long long X, long long Y) {
+    Point2DI(const long long X, const long long Y) {
         this->X = X;
         this->Y = Y;
     }
@@ -136,14 +136,6 @@ public:
     Point2DI(const Vector2DI &arg) {
         this->X = arg.getX();
         this->Y = arg.getY();
-    }
-
-    bool operator ==(const Point2DI &arg) const {
-        return this->X == arg.X && this->Y == arg.Y;
-    }
-
-    bool operator !=(const Point2DI &arg) const {
-        return !(*this == arg);
     }
 
     void setX(long long X) {
@@ -184,8 +176,7 @@ public:
     double getAngle(const Point2DI &B, const Point2DI &C) const {
         Vector2DI AB = this->getVectorWith(B);
         Vector2DI AC = this->getVectorWith(C);
-        double answer = AB.angleWith(AC);
-        return answer;
+        return AB.angleWith(AC);
     }
 
     Point2DI getSymetricOf(const Point2DI &arg) const {
@@ -193,6 +184,14 @@ public:
                         2 * this->Y - arg.Y);
     }
 };
+
+bool operator ==(const Point2DI &a, const Point2DI &b) {
+    return a.getX() == b.getX() && a.getY() == b.getY();
+}
+
+bool operator !=(const Point2DI &a, const Point2DI &b) {
+    return !(a == b);
+}
 
 Point2DI operator +(const Point2DI &a, const Point2DI &b) {
     return Point2DI(a.getX() + b.getX(), a.getY() + b.getY());
@@ -232,7 +231,7 @@ public:
         this->Y = 0;
     }
 
-    Point2DD(double X, double Y) {
+    Point2DD(const double X, const double Y) {
         this->X = X;
         this->Y = Y;
     }
@@ -247,16 +246,7 @@ public:
         this->Y = arg.getY();
     }
 
-    bool operator ==(const Point2DD &arg) const {
-        return Math::areEq(this->X, arg.X)
-            && Math::areEq(this->Y, arg.Y);
-    }
-
-    bool operator !=(const Point2DD &arg) const {
-        return !(*this == arg);
-    }
-
-    void setX(double X) {
+    void setX(const double X) {
         this->X = X;
     }
 
@@ -264,7 +254,7 @@ public:
         return this->X;
     }
 
-    void setY(double Y) {
+    void setY(const double Y) {
         this->Y = Y;
     }
 
@@ -295,8 +285,7 @@ public:
     double getAngle(const Point2DD &B, const Point2DD &C) const {
         Vector2DD AB = this->getVectorWith(B);
         Vector2DD AC = this->getVectorWith(C);
-        double answer = AB.angleWith(AC);
-        return answer;
+        return AB.angleWith(AC);
     }
 
     Point2DD getSymetricOf(const Point2DD &arg) const {
@@ -304,6 +293,15 @@ public:
                         2 * this->Y - arg.Y);
     }
 };
+
+bool operator ==(const Point2DD &a, const Point2DD &b) {
+    return Math::areEq(a.getX(), b.getX())
+        && Math::areEq(a.getY(), b.getY());
+}
+
+bool operator !=(const Point2DD &a, const Point2DD &b) {
+    return !(a == b);
+}
 
 Point2DD operator +(const Point2DD &a, const Point2DD &b) {
     return Point2DD(a.getX() + b.getX(), a.getY() + b.getY());
@@ -313,15 +311,15 @@ Point2DD operator -(const Point2DD &a, const Point2DD &b) {
     return Point2DD(a.getX() - b.getX(), a.getY() - b.getY());
 }
 
-Point2DD operator *(double a, const Point2DD &b) {
+Point2DD operator *(const double a, const Point2DD &b) {
     return Point2DD(a * b.getX(), a * b.getY());
 }
 
-Point2DD operator *(const Point2DD &a, double b) {
+Point2DD operator *(const Point2DD &a, const double b) {
     return Point2DD(a.getX() * b, a.getY() * b);
 }
 
-Point2DD operator /(const Point2DD &a, double b) {
+Point2DD operator /(const Point2DD &a, const double b) {
     return Point2DD(a.getX() / b, a.getY() / b);
 }
 
@@ -333,11 +331,11 @@ Point2DD operator -=(Point2DD &a, const Point2DD &b) {
     return a = a - b;
 }
 
-Point2DD operator *=(Point2DD &a, double b) {
+Point2DD operator *=(Point2DD &a, const double b) {
     return a = a * b;
 }
 
-Point2DD operator /=(Point2DD &a, double b) {
+Point2DD operator /=(Point2DD &a, const double b) {
     return a = a / b;
 }
 
@@ -360,7 +358,7 @@ public:
         *this = Point2DP(arg.getX(), arg.getY());
     }
 
-    void setDistance(double distance) {
+    void setDistance(const double distance) {
         this->distance = distance;
     }
 
@@ -368,7 +366,7 @@ public:
         return this->distance;
     }
 
-    void setAngle(double angle) {
+    void setAngle(const double angle) {
         this->angle = angle;
     }
 
@@ -420,8 +418,8 @@ public:
         return this->C;
     }
 
-    double distanceTo(const Point2DD &arg) const {
-        return fabs(this->A * arg.getX() + this->B * arg.getY() + this->C) / this->norm;
+    Vector2DI getNormal() const {
+        return Vector2DI(this->getA(), this->getB());
     }
 
     bool isParallelWith(const Line2DI &arg) const {
@@ -448,6 +446,14 @@ public:
 
     double getPointSign(const Point2DD &arg) const {
         return this->A * arg.getX() + this->B * arg.getY() + this->C;
+    }
+
+    double distanceTo(const Point2DI &arg) const {
+        return abs(this->getPointSign(arg)) / this->norm;
+    }
+
+    double distanceTo(const Point2DD &arg) const {
+        return fabs(this->getPointSign(arg)) / this->norm;
     }
 
     bool contains(const Point2DI &arg) const {
@@ -485,7 +491,8 @@ private:
     double C;
 
     void normalize() {
-        double norm = sqrt(this->A * this->A + this->B * this->B);
+        double norm = sqrt(this->A * this->A
+                         + this->B * this->B);
         this->A /= norm;
         this->B /= norm;
         this->C /= norm;
@@ -498,7 +505,7 @@ public:
         this->normalize();
     }
 
-    Line2DD(double A, double B, double C) {
+    Line2DD(const double A, const double B, const double C) {
         this->A = A;
         this->B = B;
         this->C = C;
@@ -523,8 +530,8 @@ public:
         return this->C;
     }
 
-    double distanceTo(const Point2DD &arg) const {
-        return fabs(this->A * arg.getX() + this->B * arg.getY() + this->C);
+    Vector2DD getNormal() const {
+        return Vector2DD(this->getA(), this->getB());
     }
 
     bool isParallelWith(const Line2DD &arg) const {
@@ -547,6 +554,10 @@ public:
 
     double getPointSign(const Point2DD &arg) const {
         return this->A * arg.getX() + this->B * arg.getY() + this->C;
+    }
+
+    double distanceTo(const Point2DD &arg) const {
+        return fabs(this->getPointSign(arg));
     }
 
     bool contains(const Point2DD &arg) const {
