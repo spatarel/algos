@@ -38,101 +38,6 @@ namespace Math {
   }
 }
 
-class Vector2DI {
-private:
-  long long X;
-  long long Y;
-
-public:
-  Vector2DI() {
-    this->X = 0;
-    this->Y = 0;
-  }
-
-  Vector2DI(long long X, long long Y) {
-    this->X = X;
-    this->Y = Y;
-  }
-
-  void setX(long long X) {
-    this->X = X;
-  }
-
-  long long getX() const {
-    return this->X;
-  }
-
-  void setY(long long Y) {
-    this->Y = Y;
-  }
-
-  long long getY() const {
-    return this->Y;
-  }
-
-  double getNorm() const {
-    return sqrt(this->X * this->X + this->Y * this->Y);
-  }
-
-  long long dotProductWith(const Vector2DI &arg) const {
-      return this->X * arg.X + this->Y * arg.Y;
-  }
-
-  double angleWith(const Vector2DI &arg) const {
-      return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
-  }
-};
-
-class Vector2DD {
-private:
-  double X;
-  double Y;
-
-public:
-  Vector2DD() {
-    this->X = 0;
-    this->Y = 0;
-  }
-
-  Vector2DD(const double X, const double Y) {
-    this->X = X;
-    this->Y = Y;
-  }
-
-  Vector2DD(const Vector2DI &arg) {
-    this->X = arg.getX();
-    this->Y = arg.getY();
-  }
-
-  void setX(const double X) {
-    this->X = X;
-  }
-
-  double getX() const {
-    return this->X;
-  }
-
-  void setY(const double Y) {
-    this->Y = Y;
-  }
-
-  double getY() const {
-    return this->Y;
-  }
-
-  double getNorm() const {
-    return sqrt(this->X * this->X + this->Y * this->Y);
-  }
-
-  double dotProductWith(const Vector2DD &arg) const {
-    return this->X * arg.X + this->Y * arg.Y;
-  }
-
-  double angleWith(const Vector2DD &arg) const {
-    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
-  }
-};
-
 class Point2DI {
 private:
   long long X;
@@ -149,12 +54,7 @@ public:
     this->Y = Y;
   }
 
-  Point2DI(const Vector2DI &arg) {
-    this->X = arg.getX();
-    this->Y = arg.getY();
-  }
-
-  void setX(long long X) {
+  void setX(const long long X) {
     this->X = X;
   }
 
@@ -162,12 +62,24 @@ public:
     return this->X;
   }
 
-  void setY(long long Y) {
+  void setY(const long long Y) {
     this->Y = Y;
   }
 
   long long getY() const {
     return this->Y;
+  }
+
+  double getNorm() const {
+    return sqrt(this->X * this->X + this->Y * this->Y);
+  }
+
+  long long dotProductWith(const Point2DI &arg) const {
+      return this->X * arg.X + this->Y * arg.Y;
+  }
+
+  double angleWith(const Point2DI &arg) const {
+      return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
   }
 
   double distanceTo(const Point2DI &arg) const {
@@ -185,13 +97,9 @@ public:
     return this->getAreaSgn2(A, B) == 0;
   }
 
-  Vector2DI getVectorWith(const Point2DI &arg) const {
-    return Vector2DI(arg.X - this->X, arg.Y - this->Y);
-  }
-
   double getAngle(const Point2DI &B, const Point2DI &C) const {
-    Vector2DI AB = this->getVectorWith(B);
-    Vector2DI AC = this->getVectorWith(C);
+    Point2DI AB(B.X - this->X, B.Y - this->Y);
+    Point2DI AC(C.X - this->X, C.Y - this->Y);
     return AB.angleWith(AC);
   }
 
@@ -226,11 +134,11 @@ Point2DI operator -(const Point2DI &a) {
                   -a.getY());
 }
 
-Point2DI operator *(long long a, const Point2DI &b) {
+Point2DI operator *(const long long a, const Point2DI &b) {
   return Point2DI(a * b.getX(), a * b.getY());
 }
 
-Point2DI operator *(const Point2DI &a, long long b) {
+Point2DI operator *(const Point2DI &a, const long long b) {
   return Point2DI(a.getX() * b, a.getY() * b);
 }
 
@@ -242,7 +150,7 @@ Point2DI operator -=(Point2DI &a, const Point2DI &b) {
   return a = a - b;
 }
 
-Point2DI operator *=(Point2DI &a, long long b) {
+Point2DI operator *=(Point2DI &a, const long long b) {
   return a = a * b;
 }
 
@@ -260,11 +168,6 @@ public:
   Point2DD(const double X, const double Y) {
     this->X = X;
     this->Y = Y;
-  }
-
-  Point2DD(const Vector2DD &arg) {
-    this->X = arg.getX();
-    this->Y = arg.getY();
   }
 
   Point2DD(const Point2DI &arg) {
@@ -288,6 +191,18 @@ public:
     return this->Y;
   }
 
+  double getNorm() const {
+    return sqrt(this->X * this->X + this->Y * this->Y);
+  }
+
+  double dotProductWith(const Point2DD &arg) const {
+    return this->X * arg.X + this->Y * arg.Y;
+  }
+
+  double angleWith(const Point2DD &arg) const {
+    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+  }
+
   double distanceTo(const Point2DD &arg) const {
     double dx = this->X - arg.X;
     double dy = this->Y - arg.Y;
@@ -303,20 +218,15 @@ public:
     return Math::isZero(this->getAreaSgn2(A, B));
   }
 
-  Vector2DD getVectorWith(const Point2DD &arg) const {
-    return Vector2DD(arg.X - this->X,
-                     arg.Y - this->Y);
-  }
-
   double getAngle(const Point2DD &B, const Point2DD &C) const {
-    Vector2DD AB = this->getVectorWith(B);
-    Vector2DD AC = this->getVectorWith(C);
+    Point2DD AB(B.X - this->X, B.Y - this->Y);
+    Point2DD AC(C.X - this->X, C.Y - this->Y);
     return AB.angleWith(AC);
   }
 
   Point2DD getSymetricOf(const Point2DD &arg) const {
-    return Point2DD(2 * this->X - arg.X,
-                    2 * this->Y - arg.Y);
+    return Point2DD(2.0 * this->X - arg.X,
+                    2.0 * this->Y - arg.Y);
   }
 };
 
@@ -453,8 +363,8 @@ public:
     return this->C;
   }
 
-  Vector2DI getNormal() const {
-    return Vector2DI(this->getA(), this->getB());
+  Point2DI getNormal() const {
+    return Point2DI(this->getA(), this->getB());
   }
 
   bool isParallelWith(const Line2DI &arg) const {
@@ -560,8 +470,8 @@ public:
     return this->C;
   }
 
-  Vector2DD getNormal() const {
-    return Vector2DD(this->getA(), this->getB());
+  Point2DD getNormal() const {
+    return Point2DD(this->getA(), this->getB());
   }
 
   bool isParallelWith(const Line2DD &arg) const {

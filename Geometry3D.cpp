@@ -31,130 +31,6 @@ namespace Math {
   }
 }
 
-class Vector3DI {
-private:
-  long long X;
-  long long Y;
-  long long Z;
-
-public:
-  Vector3DI() {
-    this->X = 0;
-    this->Y = 0;
-    this->Z = 0;
-  }
-
-  Vector3DI(const long long &X, const long long &Y, const long long &Z) {
-    this->X = X;
-    this->Y = Y;
-    this->Z = Z;
-  }
-
-  void setX(const long long &X) {
-    this->X = X;
-  }
-
-  long long getX() const {
-    return this->X;
-  }
-
-  void setY(const long long &Y) {
-    this->Y = Y;
-  }
-
-  long long getY() const {
-    return this->Y;
-  }
-
-  void setZ(const long long &Z) {
-    this->Z = Z;
-  }
-
-  long long getZ() const {
-    return this->Z;
-  }
-
-  double getNorm() const {
-    return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
-  }
-
-  long long dotProductWith(const Vector3DI &arg) const {
-    return this->X * arg.X + this->Y * arg.Y + this->Z * arg.Z;
-  }
-
-  Vector3DI crossProductWith(const Vector3DI &arg) const {
-    return Vector3DI(this->Y * arg.Z - this->Z * arg.Y,
-                     this->Z * arg.X - this->X * arg.Z,
-                     this->X * arg.Y - this->Y * arg.X);
-  }
-
-  double angleWith(const Vector3DI &arg) const {
-    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
-  }
-};
-
-class Vector3DD {
-private:
-  double X;
-  double Y;
-  double Z;
-
-public:
-  Vector3DD() {
-    this->X = 0;
-    this->Y = 0;
-    this->Z = 0;
-  }
-
-  Vector3DD(const double &X, const double &Y, const double &Z) {
-    this->X = X;
-    this->Y = Y;
-    this->Z = Z;
-  }
-
-  void setX(const double &X) {
-    this->X = X;
-  }
-
-  double getX() const {
-    return this->X;
-  }
-
-  void setY(const double &Y) {
-    this->Y = Y;
-  }
-
-  double getY() const {
-    return this->Y;
-  }
-
-  void setZ(const double &Z) {
-    this->Z = Z;
-  }
-
-  double getZ() const {
-    return this->Z;
-  }
-
-  double getNorm() const {
-    return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
-  }
-
-  double dotProductWith(const Vector3DD &arg) const {
-    return this->X * arg.X + this->Y * arg.Y + this->Z * arg.Z;
-  }
-
-  Vector3DD crossProductWith(const Vector3DD &arg) const {
-    return Vector3DD(this->Y * arg.Z - this->Z * arg.Y,
-                     this->Z * arg.X - this->X * arg.Z,
-                     this->X * arg.Y - this->Y * arg.X);
-  }
-
-  double angleWith(const Vector3DD &arg) const {
-    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
-  }
-};
-
 class Point3DI {
 private:
   long long X;
@@ -172,12 +48,6 @@ public:
     this->X = X;
     this->Y = Y;
     this->Z = Z;
-  }
-
-  Point3DI(const Vector3DI &arg) {
-    this->X = arg.getX();
-    this->Y = arg.getY();
-    this->Z = arg.getZ();
   }
 
   void setX(const long long &X) {
@@ -204,6 +74,24 @@ public:
     return this->Z;
   }
 
+  double getNorm() const {
+    return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
+  }
+
+  long long dotProductWith(const Point3DI &arg) const {
+    return this->X * arg.X + this->Y * arg.Y + this->Z * arg.Z;
+  }
+
+  Point3DI crossProductWith(const Point3DI &arg) const {
+    return Point3DI(this->Y * arg.Z - this->Z * arg.Y,
+                    this->Z * arg.X - this->X * arg.Z,
+                    this->X * arg.Y - this->Y * arg.X);
+  }
+
+  double angleWith(const Point3DI &arg) const {
+    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+  }
+
   double distanceTo(const Point3DI& arg) const {
     long long dx = this->X - arg.X;
     long long dy = this->Y - arg.Y;
@@ -211,15 +99,9 @@ public:
     return sqrt(dx * dx + dy * dy + dz * dz);
   }
 
-  Vector3DI getVectorWith(const Point3DI &arg) const {
-    return Vector3DI(arg.X - this->X,
-                     arg.Y - this->Y,
-                     arg.Z - this->Z);
-  }
-
   double getAngle(const Point3DI &B, const Point3DI &C) const {
-    Vector3DI AB = this->getVectorWith(B);
-    Vector3DI AC = this->getVectorWith(C);
+    Point3DI AB(B.X - this->X, B.Y - this->Y, B.Z - this->Z);
+    Point3DI AC(C.X - this->X, C.Y - this->Y, C.Z - this->Z);
     return AB.angleWith(AC);
   }
 
@@ -262,13 +144,13 @@ Point3DI operator -(const Point3DI &a) {
                   -a.getZ());
 }
 
-Point3DI operator *(long long a, const Point3DI &b) {
+Point3DI operator *(const long long a, const Point3DI &b) {
   return Point3DI(a * b.getX(),
                   a * b.getY(),
                   a * b.getZ());
 }
 
-Point3DI operator *(const Point3DI &a, long long b) {
+Point3DI operator *(const Point3DI &a, const long long b) {
   return Point3DI(a.getX() * b,
                   a.getY() * b,
                   a.getZ() * b);
@@ -282,7 +164,7 @@ Point3DI operator -=(Point3DI &a, const Point3DI &b) {
   return a = a - b;
 }
 
-Point3DI operator *=(Point3DI &a, long long b) {
+Point3DI operator *=(Point3DI &a, const long long b) {
   return a = a * b;
 }
 
@@ -311,7 +193,7 @@ public:
     this->Z = Z;
   }
 
-  Point3DD(const Vector3DD &arg) {
+  Point3DD(const Point3DD &arg) {
     this->X = arg.getX();
     this->Y = arg.getY();
     this->Z = arg.getZ();
@@ -341,6 +223,24 @@ public:
     return this->Z;
   }
 
+  double getNorm() const {
+    return sqrt(this->X * this->X + this->Y * this->Y + this->Z * this->Z);
+  }
+
+  double dotProductWith(const Point3DD &arg) const {
+    return this->X * arg.X + this->Y * arg.Y + this->Z * arg.Z;
+  }
+
+  Point3DD crossProductWith(const Point3DD &arg) const {
+    return Point3DD(this->Y * arg.Z - this->Z * arg.Y,
+                    this->Z * arg.X - this->X * arg.Z,
+                    this->X * arg.Y - this->Y * arg.X);
+  }
+
+  double angleWith(const Point3DD &arg) const {
+    return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
+  }
+
   double distanceTo(const Point3DD& arg) const {
     double dx = this->X - arg.X;
     double dy = this->Y - arg.Y;
@@ -348,22 +248,16 @@ public:
     return sqrt(dx * dx + dy * dy + dz * dz);
   }
 
-  Vector3DD getVectorWith(const Point3DD &arg) const {
-    return Vector3DD(arg.X - this->X,
-                     arg.Y - this->Y,
-                     arg.Z - this->Z);
-  }
-
   double getAngle(const Point3DD &B, const Point3DD &C) const {
-    Vector3DD AB = this->getVectorWith(B);
-    Vector3DD AC = this->getVectorWith(C);
+    Point3DD AB(B.X - this->X, B.Y - this->Y, B.Z - this->Z);
+    Point3DD AC(C.X - this->X, C.Y - this->Y, C.Z - this->Z);
     return AB.angleWith(AC);
   }
 
   Point3DD getSymetricOf(const Point3DD &arg) const {
-    return Point3DD(2 * this->X - arg.X,
-                    2 * this->Y - arg.Y,
-                    2 * this->Z - arg.Z);
+    return Point3DD(2.0 * this->X - arg.X,
+                    2.0 * this->Y - arg.Y,
+                    2.0 * this->Z - arg.Z);
   }
 };
 
@@ -556,8 +450,8 @@ public:
     return this->D;
   }
 
-  Vector3DI getNormal() const {
-    return Vector3DI(this->getA(), this->getB(), this->getC());
+  Point3DI getNormal() const {
+    return Point3DI(this->getA(), this->getB(), this->getC());
   }
 
   long long getPointSign(const Point3DI& arg) const {
@@ -655,8 +549,8 @@ public:
     return this->D;
   }
 
-  Vector3DD getNormal() const {
-    return Vector3DD(this->getA(), this->getB(), this->getC());
+  Point3DD getNormal() const {
+    return Point3DD(this->getA(), this->getB(), this->getC());
   }
 
   double getPointSign(const Point3DD& arg) const {
