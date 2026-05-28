@@ -627,13 +627,16 @@ public:
     this->B = B;
   }
 
-  Line2DI getLine() {
-    return this->L;
+  Point2DI getA() {
+    return this->A;
   }
 
-  Point2DD getMiddle() {
-    return Point2DD((A.getX() + B.getX()) / 2.0,
-                    (A.getY() + B.getY()) / 2.0);
+  Point2DI getB() {
+    return this->B;
+  }
+
+  Line2DI getLine() {
+    return this->L;
   }
 
   bool isParallelWith(const Segment2DI &B) const {
@@ -641,61 +644,27 @@ public:
   }
 
   bool isIntersectingWithP(const Segment2DI &B) const {
-    const Point2DI &aa = this->A;
-    const Point2DI &ab = this->B;
-    const Point2DI &ba = B.A;
-    const Point2DI &bb = B.B;
     if (this->L.isTheSameAs(B.L)) {
-      long long a = this->L.getB();
-      long long b =-this->L.getA();
-      // distSgn = a * x + b * y
-      long long distSgnAA = a * aa.getX() + b * aa.getY();
-      long long distSgnAB = a * ab.getX() + b * ab.getY();
-      long long distSgnBA = a * ba.getX() + b * ba.getY();
-      long long distSgnBB = a * bb.getX() + b * bb.getY();
-      Math::sort(distSgnAA, distSgnAB);
-      Math::sort(distSgnBA, distSgnBB);
-      return distSgnBA <= distSgnAB && distSgnAA <= distSgnBB;
+      long long AAX = this->A.getX(), ABX = this->B.getX(); Math::sort(AAX, ABX);
+      long long AAY = this->A.getY(), ABY = this->B.getY(); Math::sort(AAY, ABY);
+      long long BAX = B.A.getX(), BBX = B.B.getX(); Math::sort(BAX, BBX);
+      long long BAY = B.A.getY(), BBY = B.B.getY(); Math::sort(BAY, BBY);
+      return (BAX <= ABX) & (AAX <= BBX)
+           & (BAY <= ABY) & (AAY <= BBY);
     } else {
       return false;
     }
   }
 
   bool isIntersectingWithNonP(const Segment2DI &B) const {
-    long long aax = this->A.getX(), aay = this->A.getY();
-    long long abx = this->B.getX(), aby = this->B.getY();
-    long long bax = B.A.getX(), bay = B.A.getY();
-    long long bbx = B.B.getX(), bby = B.B.getY();
-    Math::sort(aax, abx); Math::sort(aay, aby);
-    Math::sort(bax, bbx); Math::sort(bay, bby);
-    long long pxa = B.L.getC() * this->L.getB() - this->L.getC() * B.L.getB();
-    long long pxb = this->L.getA() * B.L.getB() - this->L.getB() * B.L.getA();
-    if (pxb < 0) {
-      pxa = -pxa;
-      pxb = -pxb;
-    }
-    long long pya = B.L.getC() * this->L.getA() - this->L.getC() * B.L.getA();
-    long long pyb = this->L.getB() * B.L.getA() - this->L.getA() * B.L.getB();
-    if (pyb < 0) {
-      pya = -pya;
-      pyb = -pyb;
-    }
-    bool ok = true;
-    if (aax == abx) {
-      ok &= (aay * pyb <= pya);
-      ok &= (pya <= aby * pyb);
-    } else {
-      ok &= (aax * pxb <= pxa);
-      ok &= (pxa <= abx * pxb);
-    }
-    if (bax == bbx) {
-      ok &= (bay * pyb <= pya);
-      ok &= (pya <= bby * pyb);
-    } else {
-      ok &= (bax * pxb <= pxa);
-      ok &= (pxa <= bbx * pxb);
-    }
-    return ok;
+    long long aa = B.L.getPointSign(this->A);
+    long long ab = B.L.getPointSign(this->B);
+    long long ba = this->L.getPointSign(B.A);
+    long long bb = this->L.getPointSign(B.B);
+    Math::sort(aa, ab);
+    Math::sort(ba, bb);
+    return (aa <= 0) & (0 <= ab)
+         & (ba <= 0) & (0 <= bb);
   }
 
   Point2DD intersectWith(const Segment2DI &B) const {
@@ -703,13 +672,25 @@ public:
   }
 
   bool contains(const Point2DI &arg) const {
-    return this->L.contains(arg)
-        && Math::areEq(arg.distanceTo(this->A) + arg.distanceTo(this->B), this->A.distanceTo(this->B));
+    if (this->L.contains(arg)) {
+      long long minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
+      long long minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
+      return (minX <= arg.getX()) & (arg.getX() <= maxX)
+           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+    } else {
+      return false;
+    }
   }
 
   bool contains(const Point2DD &arg) const {
-    return this->L.contains(arg)
-        && Math::areEq(arg.distanceTo(this->A) + arg.distanceTo(this->B), this->A.distanceTo(this->B));
+    if (this->L.contains(arg)) {
+      long long minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
+      long long minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
+      return (minX <= arg.getX()) & (arg.getX() <= maxX)
+           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+    } else {
+      return false;
+    }
   }
 
   double distanceTo(const Point2DI &arg) const {
@@ -733,13 +714,16 @@ public:
     this->B = B;
   }
 
-  Line2DD getLine() {
-    return this->L;
+  Point2DD getA() {
+    return this->A;
   }
 
-  Point2DD getMiddle() {
-    return Point2DD((A.getX() + B.getX()) / 2.0,
-                    (A.getY() + B.getY()) / 2.0);
+  Point2DD getB() {
+    return this->B;
+  }
+
+  Line2DD getLine() {
+    return this->L;
   }
 
   bool isParallelWith(const Segment2DD &B) const {
@@ -747,61 +731,27 @@ public:
   }
 
   bool isIntersectingWithP(const Segment2DD &B) const {
-    const Point2DD &aa = this->A;
-    const Point2DD &ab = this->B;
-    const Point2DD &ba = B.A;
-    const Point2DD &bb = B.B;
     if (this->L.isTheSameAs(B.L)) {
-      double a = this->L.getB();
-      double b =-this->L.getA();
-      // distSgn = a * x + b * y
-      double distSgnAA = a * aa.getX() + b * aa.getY();
-      double distSgnAB = a * ab.getX() + b * ab.getY();
-      double distSgnBA = a * ba.getX() + b * ba.getY();
-      double distSgnBB = a * bb.getX() + b * bb.getY();
-      Math::sort(distSgnAA, distSgnAB);
-      Math::sort(distSgnBA, distSgnBB);
-      return distSgnBA <= distSgnAB && distSgnAA <= distSgnBB;
+      double AAX = this->A.getX(), ABX = this->B.getX(); Math::sort(AAX, ABX);
+      double AAY = this->A.getY(), ABY = this->B.getY(); Math::sort(AAY, ABY);
+      double BAX = B.A.getX(), BBX = B.B.getX(); Math::sort(BAX, BBX);
+      double BAY = B.A.getY(), BBY = B.B.getY(); Math::sort(BAY, BBY);
+      return (BAX <= ABX) & (AAX <= BBX)
+           & (BAY <= ABY) & (AAY <= BBY);
     } else {
       return false;
     }
   }
 
   bool isIntersectingWithNonP(const Segment2DD &B) const {
-    double aax = this->A.getX(), aay = this->A.getY();
-    double abx = this->B.getX(), aby = this->B.getY();
-    double bax = B.A.getX(), bay = B.A.getY();
-    double bbx = B.B.getX(), bby = B.B.getY();
-    Math::sort(aax, abx); Math::sort(aay, aby);
-    Math::sort(bax, bbx); Math::sort(bay, bby);
-    double pxa = B.L.getC() * this->L.getB() - this->L.getC() * B.L.getB();
-    double pxb = this->L.getA() * B.L.getB() - this->L.getB() * B.L.getA();
-    if (pxb < 0) {
-      pxa = -pxa;
-      pxb = -pxb;
-    }
-    double pya = B.L.getC() * this->L.getA() - this->L.getC() * B.L.getA();
-    double pyb = this->L.getB() * B.L.getA() - this->L.getA() * B.L.getB();
-    if (pyb < 0) {
-      pya = -pya;
-      pyb = -pyb;
-    }
-    bool ok = true;
-    if (Math::areEq(aax, abx)) {
-      ok &= (aay * pyb <= pya);
-      ok &= (pya <= aby * pyb);
-    } else {
-      ok &= (aax * pxb <= pxa);
-      ok &= (pxa <= abx * pxb);
-    }
-    if (Math::areEq(bax, bbx)) {
-      ok &= (bay * pyb <= pya);
-      ok &= (pya <= bby * pyb);
-    } else {
-      ok &= (bax * pxb <= pxa);
-      ok &= (pxa <= bbx * pxb);
-    }
-    return ok;
+    double aa = B.L.getPointSign(this->A);
+    double ab = B.L.getPointSign(this->B);
+    double ba = this->L.getPointSign(B.A);
+    double bb = this->L.getPointSign(B.B);
+    Math::sort(aa, ab);
+    Math::sort(ba, bb);
+    return (aa <= 0) & (0 <= ab)
+         & (ba <= 0) & (0 <= bb);
   }
 
   Point2DD intersectWith(const Segment2DD &B) const {
@@ -809,8 +759,14 @@ public:
   }
 
   bool contains(const Point2DD &arg) const {
-    return this->L.contains(arg)
-        && Math::areEq(this->A.distanceTo(arg) + arg.distanceTo(this->B), this->A.distanceTo(this->B));
+    if (this->L.contains(arg)) {
+      double minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
+      double minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
+      return (minX <= arg.getX()) & (arg.getX() <= maxX)
+           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+    } else {
+      return false;
+    }
   }
 
   double distanceTo(const Point2DD &arg) const {
