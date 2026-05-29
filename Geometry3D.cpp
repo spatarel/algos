@@ -352,7 +352,7 @@ public:
     this->distance = distance;
   }
 
-  double getDistance() {
+  double getDistance() const {
     return this->distance;
   }
 
@@ -360,7 +360,7 @@ public:
     this->latitude = latitude;
   }
 
-  double getLatitude() {
+  double getLatitude() const {
     return this->latitude;
   }
 
@@ -368,11 +368,11 @@ public:
     this->longitude = longitude;
   }
 
-  double getLongitude() {
+  double getLongitude() const {
     return this->longitude;
   }
 
-  Point3DD getPoint3DD() {
+  Point3DD getPoint3DD() const {
     return Point3DD(
       this->distance * cos(this->latitude) * cos(this->longitude),
       this->distance * cos(this->latitude) * sin(this->longitude),

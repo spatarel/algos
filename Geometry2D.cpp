@@ -307,7 +307,7 @@ public:
     this->distance = distance;
   }
 
-  double getDistance() {
+  double getDistance() const {
     return this->distance;
   }
 
@@ -315,11 +315,11 @@ public:
     this->angle = angle;
   }
 
-  double getAngle() {
+  double getAngle() const {
     return this->angle;
   }
 
-  Point2DD getPoint2DD() {
+  Point2DD getPoint2DD() const {
     return Point2DD(this->distance * cos(this->angle),
                     this->distance * sin(this->angle));
   }
@@ -537,15 +537,15 @@ public:
     this->B = B;
   }
 
-  Point2DI getA() {
+  Point2DI getA() const {
     return this->A;
   }
 
-  Point2DI getB() {
+  Point2DI getB() const {
     return this->B;
   }
 
-  Line2DI getLine() {
+  Line2DI getLine() const {
     return this->L;
   }
 
@@ -624,15 +624,15 @@ public:
     this->B = B;
   }
 
-  Point2DD getA() {
+  Point2DD getA() const {
     return this->A;
   }
 
-  Point2DD getB() {
+  Point2DD getB() const {
     return this->B;
   }
 
-  Line2DD getLine() {
+  Line2DD getLine() const {
     return this->L;
   }
 
@@ -725,11 +725,11 @@ public:
     return this->C;
   }
 
-  double getArea() {
+  double getArea() const {
     return fabs(this->A.getAreaSgn2(this->B, this->C)) / 2.0;
   }
 
-  Point2DD getCircumcenter() { // circumscribed circle center
+  Point2DD getCircumcenter() const { // circumscribed circle center
     Line2DD AB(A, B);
     Line2DD BC(B, C);
     Line2DD ABmed = AB.getPerpendicular((A + B) / 2);
@@ -737,7 +737,7 @@ public:
     return ABmed.intersectWith(BCmed);
   }
 
-  Point2DD getOrthocenter() { // nine-point circle center
+  Point2DD getOrthocenter() const { // nine-point circle center
     Line2DD AB(A, B);
     Line2DD BC(B, C);
     Line2DD ABalt = AB.getPerpendicular(C);
@@ -745,7 +745,7 @@ public:
     return ABalt.intersectWith(BCalt);
   }
 
-  Point2DD getCentroid() { // center of mass
+  Point2DD getCentroid() const { // center of mass
     return (A + B + C) / 3;
   }
 };
