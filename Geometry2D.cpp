@@ -89,8 +89,9 @@ public:
   }
 
   long long getAreaSgn2(const Point2DI &A, const Point2DI &B) const {
-    return A.X * B.Y     + B.X * this->Y + this->X * A.Y
-         - A.X * this->Y - B.X * A.Y     - this->X * B.Y;
+    return A.X * (B.Y - this->Y)
+         + B.X * (this->Y - A.Y)
+         + this->X * (A.Y - B.Y);
   }
 
   bool areCollinear(const Point2DI &A, const Point2DI &B) const {
@@ -210,8 +211,9 @@ public:
   }
 
   double getAreaSgn2(const Point2DD &A, const Point2DD &B) const {
-    return A.X * B.Y     + B.X * this->Y + this->X * A.Y
-         - A.X * this->Y - B.X * A.Y     - this->X * B.Y;
+    return A.X * (B.Y - this->Y)
+         + B.X * (this->Y - A.Y)
+         + this->X * (A.Y - B.Y);
   }
 
   bool areCollinear(const Point2DD &A, const Point2DD &B) const {
