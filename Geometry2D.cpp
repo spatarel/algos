@@ -762,7 +762,17 @@ private:
         || (A.getY() == B.getY() && A.getX() < B.getX());
   }
 
+  static bool cmpByYX(const Point2DD &A, const Point2DD &B) {
+    return (A.getY() < B.getY())
+        || (A.getY() == B.getY() && A.getX() < B.getX());
+  }
+
   static bool cmpByNorm(const Point2DI &A, const Point2DI &B) {
+    return A.getX() * A.getX() + A.getY() * A.getY()
+         < B.getX() * B.getX() + B.getY() * B.getY();
+  }
+
+  static bool cmpByNorm(const Point2DD &A, const Point2DD &B) {
     return A.getX() * A.getX() + A.getY() * A.getY()
          < B.getX() * B.getX() + B.getY() * B.getY();
   }
@@ -771,13 +781,26 @@ private:
     return A.getX() * B.getY() == A.getY() * B.getX();
   }
 
-  static bool cmpByPolarAngleAndNorm(const Point2DI &A, const Point2DI &B) {
+  static bool eqByPolarAngle(const Point2DD &A, const Point2DD &B) {
+    return A.getX() * B.getY() == A.getY() * B.getX();
+  }
+
+  static bool cmpByPolarAngleAndNormI(const Point2DI &A, const Point2DI &B) {
+    return (A.getX() * B.getY() - A.getY() * B.getX() > 0)
+        || (A.getX() * B.getY() - A.getY() * B.getX() == 0 && cmpByNorm(A, B));
+  }
+
+  static bool cmpByPolarAngleAndNormD(const Point2DD &A, const Point2DD &B) {
     return (A.getX() * B.getY() - A.getY() * B.getX() > 0)
         || (A.getX() * B.getY() - A.getY() * B.getX() == 0 && cmpByNorm(A, B));
   }
 
 public:
   static long long areaSgn2(const Point2DI &A, const Point2DI &B, const Point2DI &C) {
+    return A.getAreaSgn2(B, C);
+  }
+
+  static double areaSgn2(const Point2DD &A, const Point2DD &B, const Point2DD &C) {
     return A.getAreaSgn2(B, C);
   }
 
@@ -791,7 +814,7 @@ public:
     for (Point2DI &point : points) {
       point -= T;
     }
-    std::sort(points.begin() + 1, points.end(), cmpByPolarAngleAndNorm);
+    std::sort(points.begin() + 1, points.end(), cmpByPolarAngleAndNormI);
 
     std::vector<Point2DI> newPoints;
     newPoints.push_back(points[0]);
@@ -809,7 +832,7 @@ public:
     }
 
     std::vector<Point2DI> convexHull;
-    for (Point2DI point : points) {
+    for (const Point2DI &point : points) {
       while (convexHull.size() >= 2 && areaSgn2(
         convexHull.end()[-2], convexHull.end()[-1], point) < 0) {
         convexHull.pop_back();
@@ -817,5 +840,61 @@ public:
       convexHull.push_back(point);
     }
     return convexHull;
+  }
+
+  static std::vector<Point2DD> convexHull(std::vector<Point2DD> points) {
+    for (int i = 1; i < (int)points.size(); i++) {
+      if (!cmpByYX(points[0], points[i])) {
+        std::swap(points[0], points[i]);
+      }
+    }
+    Point2DD T = points[0];
+    for (Point2DD &point : points) {
+      point -= T;
+    }
+    std::sort(points.begin() + 1, points.end(), cmpByPolarAngleAndNormD);
+
+    std::vector<Point2DD> newPoints;
+    newPoints.push_back(points[0]);
+    newPoints.push_back(points[1]);
+    for (int i = 2; i < (int)points.size(); i++) {
+      if (eqByPolarAngle(points[i - 1], points[i])) {
+        newPoints.pop_back();
+      }
+      newPoints.push_back(points[i]);
+    }
+
+    points = newPoints;
+    for (Point2DD &point : points) {
+      point += T;
+    }
+
+    std::vector<Point2DD> convexHull;
+    for (const Point2DD &point : points) {
+      while (convexHull.size() >= 2 && areaSgn2(
+        convexHull.end()[-2], convexHull.end()[-1], point) < 0) {
+        convexHull.pop_back();
+      }
+      convexHull.push_back(point);
+    }
+    return convexHull;
+  }
+
+  static long long areaSgn2(const std::vector<Point2DI> &points) {
+    long long answer = 0;
+    int sz = points.size();
+    for (int i = 1; i + 1 < sz; i++) {
+      answer += points[0].getAreaSgn2(points[i], points[(i + 1) % sz]);
+    }
+    return answer;
+  }
+
+  static double areaSgn2(const std::vector<Point2DD> &points) {
+    double answer = 0.0;
+    int sz = points.size();
+    for (int i = 1; i + 1 < sz; i++) {
+      answer += points[0].getAreaSgn2(points[i], points[(i + 1) % sz]);
+    }
+    return answer;
   }
 };
