@@ -477,6 +477,14 @@ public:
   bool contains(const Point3DD& arg) const {
     return Math::isZero(this->getPointSign(arg));
   }
+
+  Point3DD getProjection(const Point3DD &arg) const {
+    double p = (double)this->getPointSign(arg)
+             / (this->A * this->A + this->B * this->B + this->C * this->C);
+    return Point3DD(arg.getX() - p * this->getNormal().getX(),
+                    arg.getY() - p * this->getNormal().getY(),
+                    arg.getZ() - p * this->getNormal().getZ());
+  }
 };
 
 class Plane3DD {
@@ -563,5 +571,13 @@ public:
 
   bool contains(const Point3DD& arg) const {
     return Math::isZero(this->getPointSign(arg));
+  }
+
+  Point3DD getProjection(const Point3DD &arg) const {
+    double p = this->getPointSign(arg)
+             / (this->A * this->A + this->B * this->B + this->C * this->C);
+    return Point3DD(arg.getX() - p * this->getNormal().getX(),
+                    arg.getY() - p * this->getNormal().getY(),
+                    arg.getZ() - p * this->getNormal().getZ());
   }
 };
