@@ -23,7 +23,7 @@ namespace Math {
   }
 
   bool areEq(const double a, const double b) {
-    return fabs((a - b) / std::max(1.0, b)) < Math::Epsilon;
+    return fabs(a - b) / std::max(1.0, fabs(b)) < Math::Epsilon;
   }
 
   bool isZero(const double a) {
