@@ -380,8 +380,8 @@ public:
   }
 
   Point2DD intersectWith(const Line2DI &arg) const {
-    return Point2DD((double)(arg.C * this->B - this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
-                    (double)(arg.C * this->A - this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
+    return Point2DD(((double)arg.C * this->B - (double)this->C * arg.B) / (this->A * arg.B - this->B * arg.A),
+                    ((double)arg.C * this->A - (double)this->C * arg.A) / (this->B * arg.A - this->A * arg.B));
   }
 
   long long getPointSign(const Point2DI &arg) const {
