@@ -99,6 +99,14 @@ public:
     return sqrt(dx * dx + dy * dy + dz * dz);
   }
 
+  bool areCollinear(const Point3DI &B, const Point3DI &C) const {
+    Point3DI AB(B.X - this->X, B.Y - this->Y, B.Z - this->Z);
+    Point3DI AC(C.X - this->X, C.Y - this->Y, C.Z - this->Z);
+    return AB.X * AC.Y == AC.X * AB.Y
+        && AB.X * AC.Z == AC.X * AB.Z
+        && AB.Y * AC.Z == AC.Y * AB.Z;
+  }
+
   double getAngle(const Point3DI &B, const Point3DI &C) const {
     Point3DI AB(B.X - this->X, B.Y - this->Y, B.Z - this->Z);
     Point3DI AC(C.X - this->X, C.Y - this->Y, C.Z - this->Z);
@@ -246,6 +254,14 @@ public:
     double dy = this->Y - arg.Y;
     double dz = this->Z - arg.Z;
     return sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  bool areCollinear(const Point3DD &B, const Point3DD &C) const {
+    Point3DD AB(B.X - this->X, B.Y - this->Y, B.Z - this->Z);
+    Point3DD AC(C.X - this->X, C.Y - this->Y, C.Z - this->Z);
+    return Math::areEq(AB.X * AC.Y, AC.X * AB.Y)
+        && Math::areEq(AB.X * AC.Z, AC.X * AB.Z)
+        && Math::areEq(AB.Y * AC.Z, AC.Y * AB.Z);
   }
 
   double getAngle(const Point3DD &B, const Point3DD &C) const {
