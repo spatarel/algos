@@ -82,10 +82,14 @@ public:
       return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
   }
 
-  double distanceTo(const Point2DI &arg) const {
+  long long distanceToSq(const Point2DI &arg) const {
     long long dx = this->X - arg.X;
     long long dy = this->Y - arg.Y;
-    return sqrt(dx * dx + dy * dy);
+    return dx * dx + dy * dy;
+  }
+
+  double distanceTo(const Point2DI &arg) const {
+    return sqrt(this->distanceToSq(arg));
   }
 
   long long getAreaSgn2(const Point2DI &A, const Point2DI &B) const {
@@ -204,10 +208,14 @@ public:
     return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
   }
 
-  double distanceTo(const Point2DD &arg) const {
+  double distanceToSq(const Point2DD &arg) const {
     double dx = this->X - arg.X;
     double dy = this->Y - arg.Y;
-    return sqrt(dx * dx + dy * dy);
+    return dx * dx + dy * dy;
+  }
+
+  double distanceTo(const Point2DD &arg) const {
+    return sqrt(this->distanceToSq(arg));
   }
 
   double getAreaSgn2(const Point2DD &A, const Point2DD &B) const {

@@ -92,11 +92,15 @@ public:
     return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
   }
 
-  double distanceTo(const Point3DI& arg) const {
+  long long distanceToSq(const Point3DI& arg) const {
     long long dx = this->X - arg.X;
     long long dy = this->Y - arg.Y;
     long long dz = this->Z - arg.Z;
-    return sqrt(dx * dx + dy * dy + dz * dz);
+    return dx * dx + dy * dy + dz * dz;
+  }
+
+  double distanceTo(const Point3DI& arg) const {
+    return sqrt(this->distanceToSq(arg));
   }
 
   bool areCollinear(const Point3DI &B, const Point3DI &C) const {
@@ -249,11 +253,15 @@ public:
     return Math::acos(this->dotProductWith(arg) / (this->getNorm() * arg.getNorm()));
   }
 
-  double distanceTo(const Point3DD& arg) const {
+  double distanceToSq(const Point3DD& arg) const {
     double dx = this->X - arg.X;
     double dy = this->Y - arg.Y;
     double dz = this->Z - arg.Z;
-    return sqrt(dx * dx + dy * dy + dz * dz);
+    return dx * dx + dy * dy + dz * dz;
+  }
+
+  double distanceTo(const Point3DD& arg) const {
+    return sqrt(this->distanceToSq(arg));
   }
 
   bool areCollinear(const Point3DD &B, const Point3DD &C) const {
