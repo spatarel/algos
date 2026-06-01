@@ -26,8 +26,31 @@ namespace Math {
     return fabs(a - b) / std::max(1.0, fabs(b)) < Math::Epsilon;
   }
 
+  bool lt(const double a, const double b) {
+    return a < b && !areEq(a, b);
+  }
+
+  bool lEq(const double a, const double b) {
+    return a < b || areEq(a, b);
+  }
+
+  bool gt(const double a, const double b) {
+    return a > b && !areEq(a, b);
+  }
+
+  bool gEq(const double a, const double b) {
+    return a > b || areEq(a, b);
+  }
+
   bool isZero(const double a) {
     return fabs(a) < Math::Epsilon;
+  }
+
+  template<class C>
+  void sort(C &a, C &b) {
+    if (a > b) {
+      std::swap(a, b);
+    }
   }
 }
 
