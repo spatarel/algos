@@ -3,8 +3,6 @@
 #include <cstring>
 #include <algorithm>
 
-using namespace std;
-
 class HugeInt {
 public:
     int sign;
@@ -18,7 +16,7 @@ private:
 
     HugeInt unsignedAddition(const HugeInt& arg, int newSign) const {
         HugeInt answer;
-        answer.alloc(max(this->size, arg.size) + 2);
+        answer.alloc(std::max(this->size, arg.size) + 2);
         int i;
         int min = this->size < arg.size ? this->size : arg.size;
         for (i = 0; i <= min; ++i) {
@@ -47,7 +45,7 @@ private:
 
     HugeInt unsignedSubtraction(const HugeInt& arg, int newSign) const {
         HugeInt answer;
-        answer.alloc(max(this->size, arg.size) + 2);
+        answer.alloc(std::max(this->size, arg.size) + 2);
         int i;
         int min = this->size < arg.size ? this->size : arg.size;
         for (i = 0; i <= min; ++i) {
