@@ -335,7 +335,8 @@ private:
   double invNorm;
 
   void normalize() {
-    this->invNorm = 1.0 / sqrt(this->A * this->A + this->B * this->B);
+    this->invNorm = 1.0 / sqrt((double)this->A * this->A
+                             + (double)this->B * this->B);
   }
 
 public:
