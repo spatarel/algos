@@ -920,4 +920,20 @@ namespace Geometry {
     }
     return answer;
   }
+
+  double getEdgec(const double &a, const double &b, const double &C) {
+    return sqrt(std::max(0.0, a * a + b * b - 2.0 * a * b * cos(C)));
+  }
+
+  double getAngleC(const double &a, const double &b, const double &c) {
+    return acos((a * a + b * b - c * c) / (2.0 * a * b));
+  }
+
+  std::pair<double, double> getEdgea(const double &b, const double &c, const double &C) {
+    double cosC = cos(C);
+    double sinC = sin(C);
+    double delta = sqrt(std::max(0.0, c * c - b * b * sinC * sinC));
+    return std::make_pair(b * cosC - delta,
+                          b * cosC + delta);
+  }
 };
