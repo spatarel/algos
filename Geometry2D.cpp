@@ -780,8 +780,7 @@ public:
 
 #include <algorithm>
 #include <vector>
-class Geometry {
-private:
+namespace Geometry {
   static bool cmpByYX(const Point2DI &A, const Point2DI &B) {
     return (A.getY() < B.getY())
         || (A.getY() == B.getY() && A.getX() < B.getX());
@@ -820,16 +819,15 @@ private:
         || (A.getX() * B.getY() - A.getY() * B.getX() == 0 && cmpByNorm(A, B));
   }
 
-public:
-  static long long areaSgn2(const Point2DI &A, const Point2DI &B, const Point2DI &C) {
+  long long areaSgn2(const Point2DI &A, const Point2DI &B, const Point2DI &C) {
     return A.getAreaSgn2(B, C);
   }
 
-  static double areaSgn2(const Point2DD &A, const Point2DD &B, const Point2DD &C) {
+  double areaSgn2(const Point2DD &A, const Point2DD &B, const Point2DD &C) {
     return A.getAreaSgn2(B, C);
   }
 
-  static std::vector<Point2DI> convexHull(std::vector<Point2DI> points) {
+  std::vector<Point2DI> convexHull(std::vector<Point2DI> points) {
     for (int i = 1; i < (int)points.size(); i++) {
       if (!cmpByYX(points[0], points[i])) {
         std::swap(points[0], points[i]);
@@ -867,7 +865,7 @@ public:
     return convexHull;
   }
 
-  static std::vector<Point2DD> convexHull(std::vector<Point2DD> points) {
+  std::vector<Point2DD> convexHull(std::vector<Point2DD> points) {
     for (int i = 1; i < (int)points.size(); i++) {
       if (!cmpByYX(points[0], points[i])) {
         std::swap(points[0], points[i]);
@@ -905,7 +903,7 @@ public:
     return convexHull;
   }
 
-  static long long areaSgn2(const std::vector<Point2DI> &points) {
+  long long areaSgn2(const std::vector<Point2DI> &points) {
     long long answer = 0;
     int sz = points.size();
     for (int i = 1; i + 1 < sz; i++) {
@@ -914,7 +912,7 @@ public:
     return answer;
   }
 
-  static double areaSgn2(const std::vector<Point2DD> &points) {
+  double areaSgn2(const std::vector<Point2DD> &points) {
     double answer = 0.0;
     int sz = points.size();
     for (int i = 1; i + 1 < sz; i++) {
