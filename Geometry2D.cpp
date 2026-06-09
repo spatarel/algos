@@ -580,51 +580,71 @@ public:
     return this->L.isParallelWith(B.L);
   }
 
-  bool isIntersectingWithP(const Segment2DI &B) const {
+  bool isIntersectingWithP(const Segment2DI &B, bool strictly = false) const {
     if (this->L.isTheSameAs(B.L)) {
       long long AAX = this->A.getX(), ABX = this->B.getX(); Math::sort(AAX, ABX);
       long long AAY = this->A.getY(), ABY = this->B.getY(); Math::sort(AAY, ABY);
       long long BAX = B.A.getX(), BBX = B.B.getX(); Math::sort(BAX, BBX);
       long long BAY = B.A.getY(), BBY = B.B.getY(); Math::sort(BAY, BBY);
-      return (BAX <= ABX) & (AAX <= BBX)
-           & (BAY <= ABY) & (AAY <= BBY);
+      if (strictly) {
+        return (BAX < ABX) & (AAX < BBX)
+             & (BAY < ABY) & (AAY < BBY);
+      } else {
+        return (BAX <= ABX) & (AAX <= BBX)
+             & (BAY <= ABY) & (AAY <= BBY);
+      }
     } else {
       return false;
     }
   }
 
-  bool isIntersectingWithNonP(const Segment2DI &B) const {
+  bool isIntersectingWithNonP(const Segment2DI &B, bool strictly = false) const {
     long long aa = B.L.getPointSign(this->A);
     long long ab = B.L.getPointSign(this->B);
     long long ba = this->L.getPointSign(B.A);
     long long bb = this->L.getPointSign(B.B);
     Math::sort(aa, ab);
     Math::sort(ba, bb);
-    return (aa <= 0) & (0 <= ab)
-         & (ba <= 0) & (0 <= bb);
+    if (strictly) {
+      return (aa < 0) & (0 < ab)
+           & (ba < 0) & (0 < bb);
+    } else {
+      return (aa <= 0) & (0 <= ab)
+           & (ba <= 0) & (0 <= bb);
+    }
   }
 
   Point2DD intersectWith(const Segment2DI &B) const {
     return this->L.intersectWith(B.L);
   }
 
-  bool contains(const Point2DI &arg) const {
+  bool contains(const Point2DI &arg, bool strictly = false) const {
     if (this->L.contains(arg)) {
       long long minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
       long long minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
-      return (minX <= arg.getX()) & (arg.getX() <= maxX)
-           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+      if (strictly) {
+        return (minX < arg.getX()) & (arg.getX() < maxX)
+             & (minY < arg.getY()) & (arg.getY() < maxY);
+      } else {
+        return (minX <= arg.getX()) & (arg.getX() <= maxX)
+             & (minY <= arg.getY()) & (arg.getY() <= maxY);
+      }
     } else {
       return false;
     }
   }
 
-  bool contains(const Point2DD &arg) const {
+  bool contains(const Point2DD &arg, bool strictly = false) const {
     if (this->L.contains(arg)) {
       long long minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
       long long minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
-      return (minX <= arg.getX()) & (arg.getX() <= maxX)
-           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+      if (strictly) {
+        return Math::lt(minX, arg.getX()) && Math::lt(arg.getX(), maxX)
+            && Math::lt(minY, arg.getY()) && Math::lt(arg.getY(), maxY);
+      } else {
+        return Math::lEq(minX, arg.getX()) && Math::lEq(arg.getX(), maxX)
+            && Math::lEq(minY, arg.getY()) && Math::lEq(arg.getY(), maxY);
+      }
     } else {
       return false;
     }
@@ -667,40 +687,55 @@ public:
     return this->L.isParallelWith(B.L);
   }
 
-  bool isIntersectingWithP(const Segment2DD &B) const {
+  bool isIntersectingWithP(const Segment2DD &B, bool strictly = false) const {
     if (this->L.isTheSameAs(B.L)) {
       double AAX = this->A.getX(), ABX = this->B.getX(); Math::sort(AAX, ABX);
       double AAY = this->A.getY(), ABY = this->B.getY(); Math::sort(AAY, ABY);
       double BAX = B.A.getX(), BBX = B.B.getX(); Math::sort(BAX, BBX);
       double BAY = B.A.getY(), BBY = B.B.getY(); Math::sort(BAY, BBY);
-      return (BAX <= ABX) & (AAX <= BBX)
-           & (BAY <= ABY) & (AAY <= BBY);
+      if (strictly) {
+        return Math::lt(BAX, ABX) && Math::lt(AAX, BBX)
+            && Math::lt(BAY, ABY) && Math::lt(AAY, BBY);
+      } else {
+        return Math::lEq(BAX, ABX) && Math::lEq(AAX, BBX)
+            && Math::lEq(BAY, ABY) && Math::lEq(AAY, BBY);
+      }
     } else {
       return false;
     }
   }
 
-  bool isIntersectingWithNonP(const Segment2DD &B) const {
+  bool isIntersectingWithNonP(const Segment2DD &B, bool strictly = false) const {
     double aa = B.L.getPointSign(this->A);
     double ab = B.L.getPointSign(this->B);
     double ba = this->L.getPointSign(B.A);
     double bb = this->L.getPointSign(B.B);
     Math::sort(aa, ab);
     Math::sort(ba, bb);
-    return (aa <= 0) & (0 <= ab)
-         & (ba <= 0) & (0 <= bb);
+    if (strictly) {
+      return Math::lt(aa, 0) && Math::lt(0, ab)
+          && Math::lt(ba, 0) && Math::lt(0, bb);
+    } else {
+      return Math::lEq(aa, 0) && Math::lEq(0, ab)
+          && Math::lEq(ba, 0) && Math::lEq(0, bb);
+    }
   }
 
   Point2DD intersectWith(const Segment2DD &B) const {
     return this->L.intersectWith(B.L);
   }
 
-  bool contains(const Point2DD &arg) const {
+  bool contains(const Point2DD &arg, bool strictly = false) const {
     if (this->L.contains(arg)) {
       double minX = this->A.getX(), maxX = this->B.getX(); Math::sort(minX, maxX);
       double minY = this->A.getY(), maxY = this->B.getY(); Math::sort(minY, maxY);
-      return (minX <= arg.getX()) & (arg.getX() <= maxX)
-           & (minY <= arg.getY()) & (arg.getY() <= maxY);
+      if (strictly) {
+        return Math::lt(minX, arg.getX()) && Math::lt(arg.getX(), maxX)
+            && Math::lt(minY, arg.getY()) && Math::lt(arg.getY(), maxY);
+      } else {
+        return Math::lEq(minX, arg.getX()) && Math::lEq(arg.getX(), maxX)
+            && Math::lEq(minY, arg.getY()) && Math::lEq(arg.getY(), maxY);
+      }
     } else {
       return false;
     }
