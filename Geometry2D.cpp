@@ -938,6 +938,22 @@ namespace Geometry {
     return convexHull;
   }
 
+  bool pointInPolygon(const Point2DD &P, const std::vector<Point2DD> &polygon, bool strictly = false) {
+    bool isInside = true;
+    int sz = polygon.size();
+    for (int i = 0; i < sz; i++) {
+      Point2DD A = polygon[i];
+      Point2DD B = polygon[(i + 1) % sz];
+      Line2DD AB(A, B);
+      if (strictly) {
+        isInside &= Math::lt(0.0, AB.getPointSign(P));
+      } else {
+        isInside &= Math::lEq(0.0, AB.getPointSign(P));
+      }
+    }
+    return isInside;
+  }
+
   long long areaSgn2(const std::vector<Point2DI> &points) {
     long long answer = 0;
     int sz = points.size();
