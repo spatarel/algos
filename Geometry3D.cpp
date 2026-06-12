@@ -628,3 +628,11 @@ public:
                     arg.getZ() - p * this->getNormal().getZ());
   }
 };
+
+namespace Geometry {
+  Point3DD rotateByAxys(const Point3DD &P, const Point3DD &Axys, const double &angle) {
+    return P * cos(angle)
+         + Axys.crossProductWith(P) * sin(angle)
+         + Axys * (Axys.dotProductWith(P) * (1.0 - cos(angle)));
+  }
+};
