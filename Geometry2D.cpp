@@ -425,6 +425,14 @@ public:
     return fabs(this->getPointSign(arg)) * this->invNorm;
   }
 
+  double distanceToP(const Line2DI &arg) const {
+    if (this->A * arg.A >= 0 && this->B * arg.B >= 0) {
+      return fabs(this->C * this->invNorm - arg.C * arg.invNorm);
+    } else {
+      return fabs(this->C * this->invNorm + arg.C * arg.invNorm);
+    }
+  }
+
   bool contains(const Point2DI &arg) const {
     return this->getPointSign(arg) == 0;
   }
@@ -522,6 +530,14 @@ public:
 
   double distanceTo(const Point2DD &arg) const {
     return fabs(this->getPointSign(arg)) * this->invNorm;
+  }
+
+  double distanceToP(const Line2DD &arg) const {
+    if (this->A * arg.A >= 0 && this->B * arg.B >= 0) {
+      return fabs(this->C * this->invNorm - arg.C * arg.invNorm);
+    } else {
+      return fabs(this->C * this->invNorm + arg.C * arg.invNorm);
+    }
   }
 
   bool contains(const Point2DD &arg) const {
