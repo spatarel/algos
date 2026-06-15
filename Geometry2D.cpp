@@ -673,6 +673,22 @@ public:
       return std::min(arg.distanceTo(this->A), arg.distanceTo(this->B));
     }
   }
+
+  double getCoordinateOf(const Point2DI &arg) const {
+    if (this->A.getX() == this->B.getX()) {
+      return double(arg.getY() - this->A.getY()) / (this->B.getY() - this->A.getY());
+    } else {
+      return double(arg.getX() - this->A.getX()) / (this->B.getX() - this->A.getX());
+    }
+  }
+
+  double getCoordinateOf(const Point2DD &arg) const {
+    if (this->A.getX() == this->B.getX()) {
+      return (arg.getY() - this->A.getY()) / (this->B.getY() - this->A.getY());
+    } else {
+      return (arg.getX() - this->A.getX()) / (this->B.getX() - this->A.getX());
+    }
+  }
 };
 
 class Segment2DD {
@@ -762,6 +778,14 @@ public:
       return this->L.distanceTo(arg);
     } else {
       return std::min(arg.distanceTo(this->A), arg.distanceTo(this->B));
+    }
+  }
+
+  double getCoordinateOf(const Point2DD &arg) const {
+    if (Math::areEq(this->A.getX(), this->B.getX())) {
+      return (arg.getY() - this->A.getY()) / (this->B.getY() - this->A.getY());
+    } else {
+      return (arg.getX() - this->A.getX()) / (this->B.getX() - this->A.getX());
     }
   }
 };
