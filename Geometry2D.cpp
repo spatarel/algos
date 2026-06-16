@@ -978,17 +978,59 @@ namespace Geometry {
     return convexHull;
   }
 
+  bool pointInPolygon(const Point2DI &P, const std::vector<Point2DI> &polygon, bool strictly = false) {
+    bool isInside = false;
+    int sz = polygon.size();
+    for (int i = 0; i < sz; i++) {
+      Point2DI A = polygon[i];
+      Point2DI B = polygon[(i + 1) % sz];
+      long long area = areaSgn2(P, A, B);
+
+      if (area == 0) {
+        if (Segment2DI(A, B).contains(P)) {
+          return !strictly;
+        }
+      } else {
+        if (cmpByYX(A, P) && cmpByYX(P, B)) {
+          // st->dr
+          if (area < 0) {
+            isInside = !isInside;
+          }
+        } else if (cmpByYX(B, P) && cmpByYX(P, A)) {
+          // st<-dr
+          if (area > 0) {
+            isInside = !isInside;
+          }
+        }
+      }
+    }
+    return isInside;
+  }
+
   bool pointInPolygon(const Point2DD &P, const std::vector<Point2DD> &polygon, bool strictly = false) {
-    bool isInside = true;
+    bool isInside = false;
     int sz = polygon.size();
     for (int i = 0; i < sz; i++) {
       Point2DD A = polygon[i];
       Point2DD B = polygon[(i + 1) % sz];
-      Line2DD AB(A, B);
-      if (strictly) {
-        isInside &= Math::lt(0.0, AB.getPointSign(P));
+      long long area = areaSgn2(P, A, B);
+
+      if (Math::isZero(area)) {
+        if (Segment2DD(A, B).contains(P)) {
+          return !strictly;
+        }
       } else {
-        isInside &= Math::lEq(0.0, AB.getPointSign(P));
+        if (cmpByYX(A, P) && cmpByYX(P, B)) {
+          // st->dr
+          if (area < 0) {
+            isInside = !isInside;
+          }
+        } else if (cmpByYX(B, P) && cmpByYX(P, A)) {
+          // st<-dr
+          if (area > 0) {
+            isInside = !isInside;
+          }
+        }
       }
     }
     return isInside;
