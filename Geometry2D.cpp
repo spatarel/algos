@@ -285,11 +285,23 @@ Point2DD operator *(const double a, const Point2DD &b) {
   return Point2DD(a * b.getX(), a * b.getY());
 }
 
+Point2DD operator *(const double a, const Point2DI &b) {
+  return Point2DD(a * b.getX(), a * b.getY());
+}
+
 Point2DD operator *(const Point2DD &a, const double b) {
   return Point2DD(a.getX() * b, a.getY() * b);
 }
 
+Point2DD operator *(const Point2DI &a, const double b) {
+  return Point2DD(a.getX() * b, a.getY() * b);
+}
+
 Point2DD operator /(const Point2DD &a, const double b) {
+  return a * (1.0 / b);
+}
+
+Point2DD operator /(const Point2DI &a, const double b) {
   return a * (1.0 / b);
 }
 
